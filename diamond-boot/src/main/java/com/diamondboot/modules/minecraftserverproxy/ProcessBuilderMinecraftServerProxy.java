@@ -64,6 +64,9 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
 
     @Override
     public void start() throws IOException {
+        // Minecraft version JSONs
+        // http://wiki.vg/Game_Files
+        
         Files.createDirectories(baseDir);
         Files.createDirectories(mcVersions);
         Files.createDirectories(mcInstances);
