@@ -31,10 +31,9 @@ import javax.inject.Inject;
  */
 public class Launcher implements Runnable {
 
-
     public static void main(String... args) {
         final List allModules = ImmutableList.of(
-            new MinecraftServerProxyModule(args[0]));
+                new MinecraftServerProxyModule("C:\\Users\\Greyhound\\AppData\\Roaming\\diamondboot"));
         Guice.createInjector(allModules).getInstance(Launcher.class).run();
     }
 
