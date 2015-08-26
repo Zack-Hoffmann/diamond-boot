@@ -15,9 +15,9 @@
  */
 package com.diamondboot.modules.minecraftserverproxy;
 
+import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVersionManager;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -26,11 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -39,26 +34,30 @@ import javax.inject.Named;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy {
-/*
-    private static final List<String> START_COMMAND = Arrays.asList(new String[]{
-        "java", "-Xmx1024M", "-Xms1024M", "-jar", "minecraft_server.1.8.8.jar", "nogui"
-    });
-*/
+    /*
+     private static final List<String> START_COMMAND = Arrays.asList(new String[]{
+     "java", "-Xmx1024M", "-Xms1024M", "-jar", "minecraft_server.1.8.8.jar", "nogui"
+     });
+     */
+
     private final Path baseDir;
     private final Path mcVersions;
     private final Path mcInstances;
-    private final String mcServerMojangUrl;
+    private final String baseUrl;
+    private final MinecraftServerVersionManager verMan;
 
     @Inject
     public ProcessBuilderMinecraftServerProxy(
             @Named("baseDir") String baseDir,
             @Named("mcVersionsDirectory") String mcVersionsDirectory,
             @Named("mcInstancesDirectory") String mcInstancesDirectory,
-            @Named("mcServerMojangUrl") String mcServerMojangUrl) {
+            @Named("mcVersionsBaseUrl") String baseUrl,
+            MinecraftServerVersionManager verMan) {
         this.baseDir = Paths.get(baseDir);
         this.mcVersions = Paths.get(baseDir + "/" + mcVersionsDirectory);
         this.mcInstances = Paths.get(baseDir + "/" + mcInstancesDirectory);
-        this.mcServerMojangUrl = mcServerMojangUrl;
+        this.baseUrl = baseUrl;
+        this.verMan = verMan;
 
     }
 
@@ -66,15 +65,19 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
     public void start() throws IOException {
         // Minecraft version JSONs
         // http://wiki.vg/Game_Files
-        
+
         Files.createDirectories(baseDir);
         Files.createDirectories(mcVersions);
         Files.createDirectories(mcInstances);
 
-        Path jarFile = Paths.get(mcVersions.toString() + "/minecraft_server.1.8.8.jar");
+        String ver = verMan.getLatestVersion().getId();
+
+        String fileName = "/minecraft_server." + ver + ".jar";
+        Path jarFile = Paths.get(mcVersions.toString() + fileName);
+        String fullDownloadUrl = baseUrl + ver + fileName;
 
         if (Files.notExists(jarFile)) {
-            HttpURLConnection con = (HttpURLConnection) new URL(mcServerMojangUrl).openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL(fullDownloadUrl).openConnection();
 
             try (
                     ReadableByteChannel rc = Channels.newChannel(con.getInputStream());
@@ -82,9 +85,14 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
                 fc.transferFrom(rc, 0, 10000000);
             }
         }
-        // TODO run process in mc-instances using jar in mc-versions
-        // TODO 
-        // new ProcessBuilder(START_COMMAND).inheritIO().start();
+
+        Path instanceDir = Paths.get(mcInstances.toString() + "/test-instance");
+        Files.createDirectories(instanceDir);
+
+        new ProcessBuilder(
+                "java", "-Xmx1024M", "-Xms1024M",
+                "-jar", jarFile.toString(), "nogui")
+                .inheritIO().directory(instanceDir.toFile()).start();
     }
 
 }

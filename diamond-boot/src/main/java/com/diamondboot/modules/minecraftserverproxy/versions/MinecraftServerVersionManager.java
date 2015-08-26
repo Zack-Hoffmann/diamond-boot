@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserverproxy;
+package com.diamondboot.modules.minecraftserverproxy.versions;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -23,6 +24,8 @@ import java.util.List;
  */
 public interface MinecraftServerVersionManager {
     
-    List<String> getAvailableVersions();
+    MinecraftReleasesMetadata getReleasesMetadata() throws IOException;
+    List<MinecraftVersionMetadata> getAvailableVersions() throws IOException;
+    MinecraftVersionMetadata getLatestVersion() throws IOException;
     
 }

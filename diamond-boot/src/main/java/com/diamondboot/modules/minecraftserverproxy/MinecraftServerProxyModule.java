@@ -15,7 +15,10 @@
  */
 package com.diamondboot.modules.minecraftserverproxy;
 
+import com.diamondboot.modules.minecraftserverproxy.versions.RemoteJsonMinecraftServerVersionManager;
+import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVersionManager;
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 
 /**
@@ -35,8 +38,10 @@ public class MinecraftServerProxyModule extends AbstractModule {
         bind(String.class).annotatedWith(Names.named("baseDir")).toInstance(baseDir);
         bind(String.class).annotatedWith(Names.named("mcVersionsDirectory")).toInstance("mc-versions");
         bind(String.class).annotatedWith(Names.named("mcInstancesDirectory")).toInstance("mc-instances");
-        bind(String.class).annotatedWith(Names.named("mcServerMojangUrl")).toInstance("https://s3.amazonaws.com/Minecraft.Download/versions/1.8.8/minecraft_server.1.8.8.jar");
-        
+        bind(String.class).annotatedWith(Names.named("mcVersionsBaseUrl")).toInstance("https://s3.amazonaws.com/Minecraft.Download/versions/");
+        bind(String.class).annotatedWith(Names.named("mcVersionsJsonUrl")).toInstance("versions.json");
+
+        bind(MinecraftServerVersionManager.class).to(RemoteJsonMinecraftServerVersionManager.class).in(Scopes.SINGLETON);
         bind(MinecraftServerProxy.class).to(ProcessBuilderMinecraftServerProxy.class);
     }
 
