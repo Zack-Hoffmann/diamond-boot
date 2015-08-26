@@ -15,7 +15,10 @@
  */
 package com.diamondboot.modules.minecraftserverproxy;
 
+import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceManager;
+import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceMetadata;
 import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVersionManager;
+import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftVersionMetadata;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -34,17 +37,13 @@ import javax.inject.Named;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy {
-    /*
-     private static final List<String> START_COMMAND = Arrays.asList(new String[]{
-     "java", "-Xmx1024M", "-Xms1024M", "-jar", "minecraft_server.1.8.8.jar", "nogui"
-     });
-     */
 
     private final Path baseDir;
     private final Path mcVersions;
     private final Path mcInstances;
     private final String baseUrl;
     private final MinecraftServerVersionManager verMan;
+    private final MinecraftServerInstanceManager instMan;
 
     @Inject
     public ProcessBuilderMinecraftServerProxy(
@@ -52,25 +51,26 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
             @Named("mcVersionsDirectory") String mcVersionsDirectory,
             @Named("mcInstancesDirectory") String mcInstancesDirectory,
             @Named("mcVersionsBaseUrl") String baseUrl,
-            MinecraftServerVersionManager verMan) {
+            MinecraftServerVersionManager verMan,
+            MinecraftServerInstanceManager instMan) {
         this.baseDir = Paths.get(baseDir);
         this.mcVersions = Paths.get(baseDir + "/" + mcVersionsDirectory);
         this.mcInstances = Paths.get(baseDir + "/" + mcInstancesDirectory);
         this.baseUrl = baseUrl;
         this.verMan = verMan;
+        this.instMan = instMan;
 
     }
 
     @Override
     public void start() throws IOException {
-        // Minecraft version JSONs
-        // http://wiki.vg/Game_Files
 
         Files.createDirectories(baseDir);
         Files.createDirectories(mcVersions);
         Files.createDirectories(mcInstances);
 
-        String ver = verMan.getLatestVersion().getId();
+        MinecraftVersionMetadata meta = verMan.getLatestVersion();
+        String ver = meta.getId();
 
         String fileName = "/minecraft_server." + ver + ".jar";
         Path jarFile = Paths.get(mcVersions.toString() + fileName);
@@ -86,11 +86,14 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
             }
         }
 
-        Path instanceDir = Paths.get(mcInstances.toString() + "/test-instance");
+        MinecraftServerInstanceMetadata instMeta = instMan.getInstances().get(0);
+        Path instanceDir = Paths.get(mcInstances.toString() + "/" + instMeta.getId());
         Files.createDirectories(instanceDir);
 
         new ProcessBuilder(
-                "java", "-Xmx1024M", "-Xms1024M",
+                "java",
+                "-Xmx" + instMeta.getMaxMemory(),
+                "-Xms" + instMeta.getInitialMemory(),
                 "-jar", jarFile.toString(), "nogui")
                 .inheritIO().directory(instanceDir.toFile()).start();
     }
