@@ -37,9 +37,6 @@ public class MinecraftServerProxyModule extends AbstractModule {
     
     @Override
     protected void configure() {
-        bind(String.class).annotatedWith(Names.named("baseDir")).toInstance(baseDir);
-        bind(String.class).annotatedWith(Names.named("mcVersionsDirectory")).toInstance("mc-versions");
-        bind(String.class).annotatedWith(Names.named("mcInstancesDirectory")).toInstance("mc-instances");
         bind(String.class).annotatedWith(Names.named("mcVersionsBaseUrl")).toInstance("https://s3.amazonaws.com/Minecraft.Download/versions/");
         bind(String.class).annotatedWith(Names.named("mcVersionsJsonUrl")).toInstance("versions.json");
         

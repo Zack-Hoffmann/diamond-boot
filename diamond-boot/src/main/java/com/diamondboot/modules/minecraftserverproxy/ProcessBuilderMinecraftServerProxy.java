@@ -15,6 +15,7 @@
  */
 package com.diamondboot.modules.minecraftserverproxy;
 
+import com.diamondboot.modules.core.DiamondBootContext;
 import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceManager;
 import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceMetadata;
 import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVersionManager;
@@ -38,24 +39,22 @@ import javax.inject.Named;
  */
 public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy {
 
-    private final Path baseDir;
-    private final Path mcVersions;
-    private final Path mcInstances;
     private final String baseUrl;
+    private final DiamondBootContext ctx;
     private final MinecraftServerVersionManager verMan;
     private final MinecraftServerInstanceManager instMan;
+    
+    private Process proc = null;
 
+    // TODO will eventually need to create a proxy for each available instance and generate a list of all proxies/instances available
+    
     @Inject
     public ProcessBuilderMinecraftServerProxy(
-            @Named("baseDir") String baseDir,
-            @Named("mcVersionsDirectory") String mcVersionsDirectory,
-            @Named("mcInstancesDirectory") String mcInstancesDirectory,
+            DiamondBootContext ctx,
             @Named("mcVersionsBaseUrl") String baseUrl,
             MinecraftServerVersionManager verMan,
             MinecraftServerInstanceManager instMan) {
-        this.baseDir = Paths.get(baseDir);
-        this.mcVersions = Paths.get(baseDir + "/" + mcVersionsDirectory);
-        this.mcInstances = Paths.get(baseDir + "/" + mcInstancesDirectory);
+        this.ctx = ctx;
         this.baseUrl = baseUrl;
         this.verMan = verMan;
         this.instMan = instMan;
@@ -65,15 +64,15 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
     @Override
     public void start() throws IOException {
 
-        Files.createDirectories(baseDir);
-        Files.createDirectories(mcVersions);
-        Files.createDirectories(mcInstances);
+        if (Files.notExists(ctx.getMinecraftVersionsDirectory())) {
+            Files.createDirectories(ctx.getMinecraftVersionsDirectory());
+        }
 
         MinecraftVersionMetadata meta = verMan.getLatestVersion();
         String ver = meta.getId();
 
         String fileName = "/minecraft_server." + ver + ".jar";
-        Path jarFile = Paths.get(mcVersions.toString() + fileName);
+        Path jarFile = Paths.get(ctx.getMinecraftVersionsDirectory().toString() + fileName);
         String fullDownloadUrl = baseUrl + ver + fileName;
 
         if (Files.notExists(jarFile)) {
@@ -86,11 +85,16 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
             }
         }
 
+        if (Files.notExists(ctx.getMinecraftInstancesDirectory())) {
+            Files.createDirectories(ctx.getMinecraftInstancesDirectory());
+        }
+
+        // TODO check context for default instances, create them if they don't exist (using default values), then run them
         MinecraftServerInstanceMetadata instMeta = instMan.getInstances().get(0);
-        Path instanceDir = Paths.get(mcInstances.toString() + "/" + instMeta.getId());
+        Path instanceDir = Paths.get(ctx.getMinecraftInstancesDirectory().toString() + "/" + instMeta.getId());
         Files.createDirectories(instanceDir);
 
-        new ProcessBuilder(
+        proc = new ProcessBuilder(
                 "java",
                 "-Xmx" + instMeta.getMaxMemory(),
                 "-Xms" + instMeta.getInitialMemory(),

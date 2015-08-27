@@ -32,8 +32,11 @@ import javax.inject.Inject;
 public class Launcher implements Runnable {
 
     public static void main(String... args) {
+        String appDir = args.length > 0 ? args[0]
+                : (System.getProperty("user.home") + "/diamond-boot");
+
         final List allModules = ImmutableList.of(
-                new MinecraftServerProxyModule("C:\\Users\\Greyhound\\AppData\\Roaming\\diamondboot"));
+                new MinecraftServerProxyModule(appDir));
         Guice.createInjector(allModules).getInstance(Launcher.class).run();
     }
 
