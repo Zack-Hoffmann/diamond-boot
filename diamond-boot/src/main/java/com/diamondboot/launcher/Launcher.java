@@ -19,6 +19,7 @@ import com.diamondboot.modules.core.CoreModule;
 import com.diamondboot.modules.core.DiamondBootContext;
 import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxyFactory;
 import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxyModule;
+import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceManager;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import java.io.IOException;
@@ -50,11 +51,13 @@ public class Launcher implements Runnable {
 
     private final DiamondBootContext ctx;
     private final MinecraftServerProxyFactory pxf;
+    private final MinecraftServerInstanceManager instMan;
 
     @Inject
-    public Launcher(MinecraftServerProxyFactory pxf, DiamondBootContext ctx) {
+    public Launcher(MinecraftServerProxyFactory pxf, DiamondBootContext ctx, MinecraftServerInstanceManager instMan) {
         this.pxf = pxf;
         this.ctx = ctx;
+        this.instMan = instMan;
     }
 
     @Override
@@ -62,6 +65,9 @@ public class Launcher implements Runnable {
 
         Arrays.asList(ctx.getAppProperties().getProperty("instances.startOnLaunch").split(",")).stream().forEach(i -> {
             try {
+                if (!instMan.getInstance(i).isPresent()) {
+                    instMan.newInstance(i);
+                }
                 pxf.create(i).start();
             } catch (IOException ex) {
                 Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);

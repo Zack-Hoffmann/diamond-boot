@@ -99,6 +99,7 @@ public class SingleMinecraftServerInstanceManager implements MinecraftServerInst
             meta.setMaxMemory(defs.getProperty("instances.default.memory.max"));
             meta.setVersionMetadata(versMan.getLatestVersion());
             meta.setDir(Paths.get(ctx.getMinecraftInstancesDirectory().toString() + "/" + id));
+            
             return meta;
         } else {
             return null;

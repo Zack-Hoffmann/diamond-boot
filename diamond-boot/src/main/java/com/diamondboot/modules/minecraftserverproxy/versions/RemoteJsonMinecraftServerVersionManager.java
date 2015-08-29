@@ -117,7 +117,7 @@ public class RemoteJsonMinecraftServerVersionManager implements MinecraftServerV
                 }
             }
 
-            Files.write(getInstalledDat(), (ver + " " + jarFile + "\n").getBytes(), StandardOpenOption.APPEND);
+            Files.write(getInstalledDat(), (ver + " " + jarFile.getFileName().toString() + "\n").getBytes(), StandardOpenOption.APPEND);
         }
 
         return getInstalledVersion(version).get();
@@ -129,7 +129,7 @@ public class RemoteJsonMinecraftServerVersionManager implements MinecraftServerV
     }
 
     private Path getInstalledDat() throws IOException {
-        Path dir = ctx.getMinecraftInstancesDirectory();
+        Path dir = ctx.getMinecraftVersionsDirectory();
         if (Files.notExists(dir)) {
             Files.createDirectories(dir);
         }
@@ -142,7 +142,7 @@ public class RemoteJsonMinecraftServerVersionManager implements MinecraftServerV
     }
 
     private Map<String, Path> getInstalledDatMap() throws IOException {
-        Path dir = ctx.getMinecraftInstancesDirectory();
+        Path dir = ctx.getMinecraftVersionsDirectory();
         return Files.lines(getInstalledDat())
                 .filter(s -> s.trim().length() > 0)
                 .map(s -> s.split(" "))

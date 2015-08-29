@@ -19,11 +19,13 @@ import com.diamondboot.modules.core.DiamondBootContext;
 import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceManager;
 import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceMetadata;
 import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVersionManager;
+import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftVersionMetadata;
 import com.google.inject.assistedinject.Assisted;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import javax.inject.Inject;
 
 /**
@@ -56,9 +58,15 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
     public void start() throws IOException {
 
         MinecraftServerInstanceMetadata instMeta = instMan.getInstance(instance).get();
-        String verJar
-                = verMan.getInstalledVersion(instMeta.getVersionMetadata().getId())
-                .get().getJarFile().get().toString();
+
+        String verStr = instMeta.getVersionMetadata().getId();
+        Optional<MinecraftVersionMetadata> version = verMan.getInstalledVersion(verStr);
+
+        if (!version.isPresent()) {
+            verMan.installVersion(verStr);
+        }
+
+        String verJar = verMan.getInstalledVersion(verStr).get().getJarFile().get().toString();
 
         proc = new ProcessBuilder(
                 "java",
