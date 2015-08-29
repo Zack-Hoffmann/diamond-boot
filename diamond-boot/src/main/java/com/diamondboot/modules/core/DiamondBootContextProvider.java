@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -96,7 +97,7 @@ public class DiamondBootContextProvider implements Provider<DiamondBootContext> 
         };
     }
 
-    private static void writeDefaultProperties(Path propFilePath) {
+    private static void writeDefaultProperties(Path propFilePath) throws IOException {
         final List<String> defaultLines = Arrays.asList(new String[]{
             "# Diamond Boot Application Properties",
             "# Default properties generated " + new Date(),
@@ -118,6 +119,11 @@ public class DiamondBootContextProvider implements Provider<DiamondBootContext> 
             "# List of instances to automatically create and/or start when Diamond Boot launches",
             "instances.startOnLaunch=default-inst"
         });
+
+        StringBuilder sb = new StringBuilder();
+        defaultLines.stream().forEach(l -> sb.append(l).append("\n"));
+
+        Files.write(propFilePath, sb.toString().getBytes(), StandardOpenOption.WRITE);
     }
 
 }

@@ -15,11 +15,14 @@
  */
 package com.diamondboot.launcher;
 
-import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxy;
+import com.diamondboot.modules.core.CoreModule;
+import com.diamondboot.modules.core.DiamondBootContext;
+import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxyFactory;
 import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxyModule;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,28 +35,39 @@ import javax.inject.Inject;
 public class Launcher implements Runnable {
 
     public static void main(String... args) {
-        String appDir = args.length > 0 ? args[0]
-                : (System.getProperty("user.home") + "/diamond-boot");
+        try {
+            String appDir = args.length > 0 ? args[0]
+                    : (System.getProperty("user.home") + "/diamond-boot");
 
-        final List allModules = ImmutableList.of(
-                new MinecraftServerProxyModule(appDir));
-        Guice.createInjector(allModules).getInstance(Launcher.class).run();
+            final List allModules = ImmutableList.of(
+                    new MinecraftServerProxyModule(appDir),
+                    new CoreModule(appDir));
+            Guice.createInjector(allModules).getInstance(Launcher.class).run();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 
-    private final MinecraftServerProxy proxy;
+    private final DiamondBootContext ctx;
+    private final MinecraftServerProxyFactory pxf;
 
     @Inject
-    public Launcher(MinecraftServerProxy proxy) {
-        this.proxy = proxy;
+    public Launcher(MinecraftServerProxyFactory pxf, DiamondBootContext ctx) {
+        this.pxf = pxf;
+        this.ctx = ctx;
     }
 
     @Override
     public void run() {
-        try {
-            proxy.start();
-        } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+        Arrays.asList(ctx.getAppProperties().getProperty("instances.startOnLaunch").split(",")).stream().forEach(i -> {
+            try {
+                pxf.create(i).start();
+            } catch (IOException ex) {
+                Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
     }
 
 }

@@ -16,6 +16,7 @@
 package com.diamondboot.modules.minecraftserverproxy.instances;
 
 import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftVersionMetadata;
+import java.nio.file.Path;
 
 /**
  *
@@ -27,6 +28,7 @@ public class MinecraftServerInstanceMetadata {
     private String maxMemory;
     private String initialMemory;
     private MinecraftVersionMetadata versionMetadata;
+    private Path dir;
 
     public String getId() {
         return id;
@@ -58,6 +60,14 @@ public class MinecraftServerInstanceMetadata {
 
     public void setVersionMetadata(MinecraftVersionMetadata versionMetadata) {
         this.versionMetadata = versionMetadata;
+    }
+
+    public Path getDir() {
+        return dir;
+    }
+
+    public void setDir(Path dir) {
+        this.dir = dir;
     }
 
 }

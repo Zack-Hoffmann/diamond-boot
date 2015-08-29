@@ -15,7 +15,9 @@
  */
 package com.diamondboot.modules.minecraftserverproxy.versions;
 
+import java.nio.file.Path;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  *
@@ -27,6 +29,7 @@ public class MinecraftVersionMetadata {
     private Date time;
     private Date releaseTime;
     private String type;
+    private Path jarFile;
 
     public String getId() {
         return id;
@@ -60,4 +63,11 @@ public class MinecraftVersionMetadata {
         this.type = type;
     }
 
+    public Optional<Path> getJarFile(){
+        return Optional.ofNullable(jarFile);
+    }
+    
+    public void setJarFile(Path jarFile) {
+        this.jarFile = jarFile;
+    }
 }

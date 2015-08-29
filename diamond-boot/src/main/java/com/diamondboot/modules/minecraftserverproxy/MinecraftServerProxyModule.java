@@ -21,6 +21,8 @@ import com.diamondboot.modules.minecraftserverproxy.versions.RemoteJsonMinecraft
 import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVersionManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.assistedinject.FactoryProvider;
 import com.google.inject.name.Names;
 
 /**
@@ -28,21 +30,23 @@ import com.google.inject.name.Names;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public class MinecraftServerProxyModule extends AbstractModule {
-    
+
     private final String baseDir;
-    
+
     public MinecraftServerProxyModule(String baseDir) {
         this.baseDir = baseDir;
     }
-    
+
     @Override
     protected void configure() {
         bind(String.class).annotatedWith(Names.named("mcVersionsBaseUrl")).toInstance("https://s3.amazonaws.com/Minecraft.Download/versions/");
         bind(String.class).annotatedWith(Names.named("mcVersionsJsonUrl")).toInstance("versions.json");
-        
+
         bind(MinecraftServerVersionManager.class).to(RemoteJsonMinecraftServerVersionManager.class).in(Scopes.SINGLETON);
         bind(MinecraftServerInstanceManager.class).to(SingleMinecraftServerInstanceManager.class).in(Scopes.SINGLETON);
-        bind(MinecraftServerProxy.class).to(ProcessBuilderMinecraftServerProxy.class);
+        install(new FactoryModuleBuilder()
+                .implement(MinecraftServerProxy.class, ProcessBuilderMinecraftServerProxy.class)
+                .build(MinecraftServerProxyFactory.class));
     }
-    
+
 }

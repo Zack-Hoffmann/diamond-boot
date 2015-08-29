@@ -15,13 +15,24 @@
  */
 package com.diamondboot.modules.minecraftserverproxy.versions;
 
-import com.google.gson.Gson;
+import com.diamondboot.modules.core.DiamondBootContext;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,26 +44,36 @@ import javax.inject.Named;
 public class RemoteJsonMinecraftServerVersionManager implements MinecraftServerVersionManager {
 
     private final String jsonUrlStr;
+    private final String baseUrl;
+    private final DiamondBootContext ctx;
 
     @Inject
     public RemoteJsonMinecraftServerVersionManager(
             @Named("mcVersionsBaseUrl") String baseUrl,
-            @Named("mcVersionsJsonUrl") String jsonUrl
+            @Named("mcVersionsJsonUrl") String jsonUrl,
+            DiamondBootContext ctx
     ) {
         this.jsonUrlStr = baseUrl + jsonUrl;
+        this.baseUrl = baseUrl;
+        this.ctx = ctx;
     }
 
     @Override
     public MinecraftReleasesMetadata getReleasesMetadata() throws IOException {
         URL jsonUrl = new URL(jsonUrlStr);
 
-        String json = "";
+        String json;
 
+        // TODO Cache JSON
         try (BufferedReader br = new BufferedReader(new InputStreamReader(jsonUrl.openStream()))) {
             json = br.lines().collect(Collectors.joining());
         }
 
-        return new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").create().fromJson(json, MinecraftReleasesMetadata.class);
+        MinecraftReleasesMetadata mrmd = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").create().fromJson(json, MinecraftReleasesMetadata.class);
+        Map<String, Path> installedDat = getInstalledDatMap();
+        mrmd.getVersions().stream().forEach(v -> v.setJarFile(installedDat.get(v.getId())));
+
+        return mrmd;
     }
 
     @Override
@@ -66,6 +87,68 @@ public class RemoteJsonMinecraftServerVersionManager implements MinecraftServerV
         return meta.getVersions().stream()
                 .filter(v -> v.getId().equals(meta.getLatestRelease()))
                 .findFirst().get();
+    }
+
+    @Override
+    public List<MinecraftVersionMetadata> getInstalledVersions() throws IOException {
+        Set<String> vers = getInstalledDatMap().keySet();
+        return getAvailableVersions().stream()
+                .filter(v -> vers.contains(v.getId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public MinecraftVersionMetadata installVersion(String version) throws IOException {
+        if (getInstalledDatMap().get(version) == null) {
+
+            String ver = getLatestVersion().getId();
+
+            String fileName = "minecraft_server." + ver + ".jar";
+            Path jarFile = Paths.get(ctx.getMinecraftVersionsDirectory().toString() + "/" + fileName);
+            String fullDownloadUrl = baseUrl + ver + "/" + fileName;
+
+            if (Files.notExists(jarFile)) {
+                HttpURLConnection con = (HttpURLConnection) new URL(fullDownloadUrl).openConnection();
+
+                try (
+                        ReadableByteChannel rc = Channels.newChannel(con.getInputStream());
+                        FileChannel fc = FileChannel.open(jarFile, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+                    fc.transferFrom(rc, 0, 10000000);
+                }
+            }
+
+            Files.write(getInstalledDat(), (ver + " " + jarFile + "\n").getBytes(), StandardOpenOption.APPEND);
+        }
+
+        return getInstalledVersion(version).get();
+    }
+
+    @Override
+    public Optional<MinecraftVersionMetadata> getInstalledVersion(String version) throws IOException {
+        return getInstalledVersions().stream().filter(v -> v.getId().equals(version)).findFirst();
+    }
+
+    private Path getInstalledDat() throws IOException {
+        Path dir = ctx.getMinecraftInstancesDirectory();
+        if (Files.notExists(dir)) {
+            Files.createDirectories(dir);
+        }
+        Path installedList = Paths.get(dir.toString() + "/installed.dat");
+
+        if (Files.notExists(installedList)) {
+            Files.createFile(installedList);
+        }
+        return installedList;
+    }
+
+    private Map<String, Path> getInstalledDatMap() throws IOException {
+        Path dir = ctx.getMinecraftInstancesDirectory();
+        return Files.lines(getInstalledDat())
+                .filter(s -> s.trim().length() > 0)
+                .map(s -> s.split(" "))
+                .collect(Collectors.toMap(
+                                (sa -> sa[0]),
+                                (sa -> Paths.get(dir.toString() + "/" + sa[1]))));
     }
 
 }

@@ -15,7 +15,9 @@
  */
 package com.diamondboot.modules.minecraftserverproxy.instances;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -23,6 +25,8 @@ import java.util.List;
  */
 public interface MinecraftServerInstanceManager {
 
-    List<MinecraftServerInstanceMetadata> getInstances();
-    void commitInstance(MinecraftServerInstanceMetadata meta);
+    List<MinecraftServerInstanceMetadata> getInstances() throws IOException;
+    Optional<MinecraftServerInstanceMetadata> getInstance(String id) throws IOException;
+    void commitInstance(MinecraftServerInstanceMetadata meta) throws IOException;
+    MinecraftServerInstanceMetadata newInstance(String id) throws IOException;
 }
