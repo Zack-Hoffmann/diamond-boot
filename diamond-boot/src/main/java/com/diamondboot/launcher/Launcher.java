@@ -17,14 +17,22 @@ package com.diamondboot.launcher;
 
 import com.diamondboot.modules.core.CoreModule;
 import com.diamondboot.modules.core.DiamondBootContext;
+import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxy;
 import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxyFactory;
 import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxyModule;
 import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceManager;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -63,12 +71,35 @@ public class Launcher implements Runnable {
     @Override
     public void run() {
 
+        final Scanner mainIn = new Scanner(System.in);
+
         Arrays.asList(ctx.getAppProperties().getProperty("instances.startOnLaunch").split(",")).stream().forEach(i -> {
             try {
                 if (!instMan.getInstance(i).isPresent()) {
                     instMan.newInstance(i);
                 }
-                pxf.create(i).start();
+                final MinecraftServerProxy px = pxf.create(i);
+                px.start();
+
+                final Scanner pxIn = new Scanner(px.getInputStream());
+                final PrintStream pxOut = new PrintStream(px.getOutputStream());
+
+                new Thread(() -> {
+                    while (px.isRunning()) {
+                        if (pxIn.hasNextLine()) {
+                            System.out.println(pxIn.nextLine());
+                        }
+                    }
+                }).start();
+
+                new Thread(() -> {
+                    while (px.isRunning()) {
+                        if (mainIn.hasNextLine()) {
+                            pxOut.println(mainIn.nextLine());
+                            pxOut.flush();
+                        }
+                    }
+                }).start();
             } catch (IOException ex) {
                 Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
             }

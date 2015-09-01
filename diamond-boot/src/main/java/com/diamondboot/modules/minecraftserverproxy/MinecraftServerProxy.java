@@ -16,13 +16,21 @@
 package com.diamondboot.modules.minecraftserverproxy;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public interface MinecraftServerProxy {
-    
+
     void start() throws IOException;
     
+    boolean isRunning();
+
+    InputStream getInputStream() throws IOException;
+
+    OutputStream getOutputStream() throws IOException;
+
 }

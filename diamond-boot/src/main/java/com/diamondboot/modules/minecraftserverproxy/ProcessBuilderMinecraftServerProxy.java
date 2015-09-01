@@ -22,9 +22,8 @@ import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVers
 import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftVersionMetadata;
 import com.google.inject.assistedinject.Assisted;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Optional;
 import javax.inject.Inject;
 
@@ -41,7 +40,6 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
 
     private Process proc = null;
 
-    // TODO will eventually need to create a proxy for each available instance and generate a list of all proxies/instances available
     @Inject
     public ProcessBuilderMinecraftServerProxy(
             DiamondBootContext ctx,
@@ -72,8 +70,22 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
                 "java",
                 "-Xmx" + instMeta.getMaxMemory(),
                 "-Xms" + instMeta.getInitialMemory(),
-                "-jar", verJar, "nogui")
-                .inheritIO().directory(instMeta.getDir().toFile()).start();
+                "-jar", verJar, "nogui").directory(instMeta.getDir().toFile()).start();
+    }
+
+    @Override
+    public InputStream getInputStream() throws IOException {
+        return proc != null ? proc.getInputStream() : null;
+    }
+
+    @Override
+    public OutputStream getOutputStream() throws IOException {
+        return proc != null ? proc.getOutputStream() : null;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return proc.isAlive();
     }
 
 }
