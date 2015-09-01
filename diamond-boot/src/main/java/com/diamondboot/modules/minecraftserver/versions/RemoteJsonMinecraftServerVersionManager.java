@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserverproxy.versions;
+package com.diamondboot.modules.minecraftserver.versions;
 
 import com.diamondboot.modules.core.DiamondBootContext;
 import com.google.gson.GsonBuilder;

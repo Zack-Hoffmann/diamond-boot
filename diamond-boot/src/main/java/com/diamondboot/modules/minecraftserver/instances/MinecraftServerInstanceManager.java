@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserverproxy.versions;
+package com.diamondboot.modules.minecraftserver.instances;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,18 +23,10 @@ import java.util.Optional;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftServerVersionManager {
+public interface MinecraftServerInstanceManager {
 
-    MinecraftReleasesMetadata getReleasesMetadata() throws IOException;
-
-    List<MinecraftVersionMetadata> getAvailableVersions() throws IOException;
-
-    MinecraftVersionMetadata getLatestVersion() throws IOException;
-
-    List<MinecraftVersionMetadata> getInstalledVersions() throws IOException;
-    
-    Optional<MinecraftVersionMetadata> getInstalledVersion(String version) throws IOException;
-
-    MinecraftVersionMetadata installVersion(String version) throws IOException;
-
+    List<MinecraftServerInstanceMetadata> getInstances() throws IOException;
+    Optional<MinecraftServerInstanceMetadata> getInstance(String id) throws IOException;
+    void commitInstance(MinecraftServerInstanceMetadata meta) throws IOException;
+    MinecraftServerInstanceMetadata newInstance(String id) throws IOException;
 }

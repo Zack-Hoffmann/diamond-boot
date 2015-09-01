@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserverproxy.instances;
+package com.diamondboot.modules.minecraftserver.instances;
 
-import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftVersionMetadata;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import java.nio.file.Path;
 
 /**

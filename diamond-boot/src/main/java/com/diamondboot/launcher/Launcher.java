@@ -17,10 +17,10 @@ package com.diamondboot.launcher;
 
 import com.diamondboot.modules.core.CoreModule;
 import com.diamondboot.modules.core.DiamondBootContext;
-import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxy;
-import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxyFactory;
-import com.diamondboot.modules.minecraftserverproxy.MinecraftServerProxyModule;
-import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceManager;
+import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxy;
+import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyFactory;
+import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyModule;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import java.io.IOException;

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserverproxy;
+package com.diamondboot.modules.minecraftserver.proxy;
 
-import com.diamondboot.modules.minecraftserverproxy.instances.MinecraftServerInstanceManager;
-import com.diamondboot.modules.minecraftserverproxy.instances.SingleMinecraftServerInstanceManager;
-import com.diamondboot.modules.minecraftserverproxy.versions.RemoteJsonMinecraftServerVersionManager;
-import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVersionManager;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
+import com.diamondboot.modules.minecraftserver.instances.SingleMinecraftServerInstanceManager;
+import com.diamondboot.modules.minecraftserver.versions.RemoteJsonMinecraftServerVersionManager;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
