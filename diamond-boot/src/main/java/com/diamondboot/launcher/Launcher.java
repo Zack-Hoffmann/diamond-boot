@@ -21,6 +21,8 @@ import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxy;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyFactory;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyModule;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstancesModule;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionsModule;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import java.io.IOException;
@@ -44,7 +46,9 @@ public class Launcher implements Runnable {
                     : (System.getProperty("user.home") + "/diamond-boot");
 
             final List allModules = ImmutableList.of(
-                    new MinecraftServerProxyModule(appDir),
+                    new MinecraftServerProxyModule(),
+                    new MinecraftServerVersionsModule(),
+                    new MinecraftServerInstancesModule(),
                     new CoreModule(appDir));
             Guice.createInjector(allModules).getInstance(Launcher.class).run();
         } catch (Exception e) {

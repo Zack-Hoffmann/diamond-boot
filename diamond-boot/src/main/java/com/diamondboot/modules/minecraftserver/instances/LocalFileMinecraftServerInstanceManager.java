@@ -34,7 +34,7 @@ import javax.inject.Inject;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class SingleMinecraftServerInstanceManager implements MinecraftServerInstanceManager {
+public class LocalFileMinecraftServerInstanceManager implements MinecraftServerInstanceManager {
 
     /*
      TODOS
@@ -45,7 +45,7 @@ public class SingleMinecraftServerInstanceManager implements MinecraftServerInst
     private final MinecraftServerVersionManager versMan;
 
     @Inject
-    public SingleMinecraftServerInstanceManager(DiamondBootContext ctx,
+    public LocalFileMinecraftServerInstanceManager(DiamondBootContext ctx,
             MinecraftServerVersionManager versMan) {
         instance = new MinecraftServerInstanceMetadata();
         instance.setId("instance");
