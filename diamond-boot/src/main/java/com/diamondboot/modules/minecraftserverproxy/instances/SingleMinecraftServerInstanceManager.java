@@ -24,7 +24,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -39,7 +38,6 @@ public class SingleMinecraftServerInstanceManager implements MinecraftServerInst
 
     /*
      TODOS
-     * Create index of instances in instance folder
      * Create metadata file in each instance folder
      */
     private final MinecraftServerInstanceMetadata instance;

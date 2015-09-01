@@ -22,7 +22,6 @@ import com.diamondboot.modules.minecraftserverproxy.versions.MinecraftServerVers
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.assistedinject.FactoryProvider;
 import com.google.inject.name.Names;
 
 /**
