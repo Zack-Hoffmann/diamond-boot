@@ -15,8 +15,10 @@
  */
 package com.diamondboot.modules.core;
 
+import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import java.nio.file.Path;
-import java.util.Properties;
+import java.util.List;
 
 /**
  *
@@ -26,5 +28,6 @@ public interface DiamondBootContext {
     Path getAppDirectory();
     Path getMinecraftVersionsDirectory();
     Path getMinecraftInstancesDirectory();
-    Properties getAppProperties();
+    List<String> getStartOnLaunchInstances();
+    MinecraftServerInstanceMetadata newDefaultInstanceMetadata(String id, MinecraftVersionMetadata servMeta);
 }

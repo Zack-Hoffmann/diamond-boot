@@ -27,6 +27,5 @@ public interface MinecraftServerInstanceManager {
 
     List<MinecraftServerInstanceMetadata> getInstances() throws IOException;
     Optional<MinecraftServerInstanceMetadata> getInstance(String id) throws IOException;
-    void commitInstance(MinecraftServerInstanceMetadata meta) throws IOException;
     MinecraftServerInstanceMetadata newInstance(String id) throws IOException;
 }

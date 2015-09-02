@@ -15,8 +15,14 @@
  */
 package com.diamondboot.modules.core;
 
+import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
+import com.google.gson.Gson;
 import com.google.inject.Provider;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +42,7 @@ import java.util.logging.Logger;
 public class DiamondBootContextProvider implements Provider<DiamondBootContext> {
 
     private final String appDir;
+    private final Gson gson = new Gson();
 
     protected DiamondBootContextProvider(String appDir) {
         this.appDir = appDir;
@@ -44,7 +51,7 @@ public class DiamondBootContextProvider implements Provider<DiamondBootContext> 
     @Override
     public DiamondBootContext get() {
         final Path appDirPath = Paths.get(appDir);
-        final Path appPropsPath = Paths.get(appDir + "/app.properties");
+        final Path appPropsPath = Paths.get(appDir + "/app.json");
 
         try {
             if (Files.notExists(appDirPath)) {
@@ -53,15 +60,17 @@ public class DiamondBootContextProvider implements Provider<DiamondBootContext> 
 
             if (Files.notExists(appPropsPath)) {
                 Files.createFile(appPropsPath);
-                writeDefaultProperties(appPropsPath);
+                try (FileWriter w = new FileWriter(appPropsPath.toFile())) {
+                    w.write(gson.toJson(DiamondBootConfig.getDefaultConfig()));
+                }
             }
         } catch (IOException e) {
             throw new IllegalArgumentException("Diamond Boot cannot be started in the provided directory \"" + appDir + "\".", e);
         }
 
-        final Properties appProps = new Properties();
-        try {
-            appProps.load(new FileInputStream(appPropsPath.toString()));
+        DiamondBootConfig conf = new DiamondBootConfig();
+        try (FileReader r = new FileReader(appPropsPath.toFile())) {
+            conf = gson.fromJson(r, DiamondBootConfig.class);
         } catch (IOException ex) {
             Logger.getLogger(DiamondBootContextProvider.class.getName()).log(
                     Level.SEVERE,
@@ -70,9 +79,13 @@ public class DiamondBootContextProvider implements Provider<DiamondBootContext> 
                     ex);
         }
 
-        final Path mcVersDir = Paths.get(appDir + "/" + appProps.getProperty("versions.dir"));
-        final Path mcInstDir = Paths.get(appDir + "/" + appProps.getProperty("instances.dir"));
+        final Path mcVersDir = Paths.get(appDir + "/" + conf.versions.dir);
+        final Path mcInstDir = Paths.get(appDir + "/" + conf.instances.dir);
+        final String initialMemory = conf.instances.defaults.initialMemory;
+        final String maxMemory = conf.instances.defaults.maximumMemory;
+        final List<String> startOnLaunch = conf.instances.startOnLaunch;
 
+        // TODO this is a mess.  need to find a better way to build this
         return new DiamondBootContext() {
             @Override
             public Path getAppDirectory() {
@@ -90,40 +103,23 @@ public class DiamondBootContextProvider implements Provider<DiamondBootContext> 
             }
 
             @Override
-            public Properties getAppProperties() {
-                return appProps;
+            public MinecraftServerInstanceMetadata newDefaultInstanceMetadata(String id, MinecraftVersionMetadata servMeta) {
+                MinecraftServerInstanceMetadata meta = new MinecraftServerInstanceMetadata();
+                meta.setId(id);
+                meta.setInitialMemory(initialMemory);
+                meta.setMaxMemory(maxMemory);
+                meta.setVersionMetadata(servMeta);
+                meta.setDir(Paths.get(mcInstDir.toString() + "/" + id));
+
+                return meta;
+            }
+
+            @Override
+            public List<String> getStartOnLaunchInstances() {
+                return startOnLaunch;
             }
 
         };
-    }
-
-    private static void writeDefaultProperties(Path propFilePath) throws IOException {
-        final List<String> defaultLines = Arrays.asList(new String[]{
-            "# Diamond Boot Application Properties",
-            "# Default properties generated " + new Date(),
-            "",
-            "# Relative path of Minecraft Server JAR files",
-            "versions.dir=mc-versions",
-            "",
-            "# Relative path of Minecraft Server instances",
-            "instances.dir=mc-instances",
-            "",
-            "# Default memory allocations when creating a new instance",
-            "instances.default.memory.initial=1024M",
-            "instances.default.memory.max=1024M",
-            "",
-            "# Default minecraft version ID when creating a new instance",
-            "# \"RECENT\" will use the most recent non-snapshot release",
-            "instances.default.version=RECENT",
-            "",
-            "# List of instances to automatically create and/or start when Diamond Boot launches",
-            "instances.startOnLaunch=default-inst"
-        });
-
-        StringBuilder sb = new StringBuilder();
-        defaultLines.stream().forEach(l -> sb.append(l).append("\n"));
-
-        Files.write(propFilePath, sb.toString().getBytes(), StandardOpenOption.WRITE);
     }
 
 }

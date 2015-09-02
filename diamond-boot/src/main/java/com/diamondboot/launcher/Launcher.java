@@ -72,7 +72,7 @@ public class Launcher implements Runnable {
 
         final Scanner mainIn = new Scanner(System.in);
 
-        Arrays.asList(ctx.getAppProperties().getProperty("instances.startOnLaunch").split(",")).stream().forEach(i -> {
+        ctx.getStartOnLaunchInstances().stream().forEach(i -> {
             try {
                 if (!instMan.getInstance(i).isPresent()) {
                     instMan.newInstance(i);
@@ -83,19 +83,24 @@ public class Launcher implements Runnable {
                 final Scanner pxIn = new Scanner(px.getInputStream());
                 final PrintStream pxOut = new PrintStream(px.getOutputStream());
 
+                // TODO better solution for I/O.  message queues?
                 new Thread(() -> {
                     while (px.isRunning()) {
                         if (pxIn.hasNextLine()) {
-                            System.out.println(pxIn.nextLine());
+                            System.out.println("[" + i + "]" + pxIn.nextLine());
                         }
                     }
                 }).start();
 
                 new Thread(() -> {
                     while (px.isRunning()) {
-                        if (mainIn.hasNextLine()) {
-                            pxOut.println(mainIn.nextLine());
-                            pxOut.flush();
+                        try {
+                            if (System.in.available() > 0 && mainIn.hasNextLine()) {
+                                pxOut.println(mainIn.nextLine());
+                                pxOut.flush();
+                            }
+                        } catch (IOException ex) {
+                            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                 }).start();

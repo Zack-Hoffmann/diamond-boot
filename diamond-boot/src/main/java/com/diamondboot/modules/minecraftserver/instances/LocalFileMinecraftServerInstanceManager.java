@@ -19,6 +19,10 @@ import com.diamondboot.modules.core.DiamondBootContext;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -27,6 +31,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 
@@ -36,46 +42,37 @@ import javax.inject.Inject;
  */
 public class LocalFileMinecraftServerInstanceManager implements MinecraftServerInstanceManager {
 
-    /*
-     TODOS
-     * Create metadata file in each instance folder
-     */
-    private final MinecraftServerInstanceMetadata instance;
     private final DiamondBootContext ctx;
     private final MinecraftServerVersionManager versMan;
+    private final Gson gson = new Gson();
 
     @Inject
     public LocalFileMinecraftServerInstanceManager(DiamondBootContext ctx,
             MinecraftServerVersionManager versMan) {
-        instance = new MinecraftServerInstanceMetadata();
-        instance.setId("instance");
-        instance.setInitialMemory("1024M");
-        instance.setMaxMemory("1024M");
-
         this.versMan = versMan;
         this.ctx = ctx;
     }
 
     @Override
     public List<MinecraftServerInstanceMetadata> getInstances() throws IOException {
-        Properties defs = ctx.getAppProperties();
-        final MinecraftVersionMetadata vers = versMan.getLatestVersion();
-        return getInstancesNames().stream().map(i -> {
-            // TODO need to save this instead.  using defaults for now
-            MinecraftServerInstanceMetadata meta = new MinecraftServerInstanceMetadata();
-            meta.setId(i);
-            meta.setInitialMemory(defs.getProperty("instances.default.memory.initial"));
-            meta.setMaxMemory(defs.getProperty("instances.default.memory.max"));
-            meta.setVersionMetadata(vers);
-            meta.setDir(Paths.get(ctx.getMinecraftInstancesDirectory().toString() + "/" + i));
+        return getInstanceIds().stream()
+                .map(i -> {
+                    MinecraftServerInstanceMetadata meta = null;
+                    try {
+                        MinecraftServerInstanceConfiguration conf = getInstanceConfiguration(i);
+                        MinecraftVersionMetadata vers = versMan.getInstalledVersion(conf.getVersionId()).orElse(versMan.getLatestVersion());
 
-            return meta;
-        }).collect(Collectors.toList());
-    }
-
-    @Override
-    public void commitInstance(MinecraftServerInstanceMetadata meta) {
-        instance.setVersionMetadata(meta.getVersionMetadata());
+                        meta = new MinecraftServerInstanceMetadata();
+                        meta.setId(conf.getInstanceId());
+                        meta.setInitialMemory(conf.getInitialMemory());
+                        meta.setMaxMemory(conf.getMaxMemory());
+                        meta.setVersionMetadata(vers);
+                        meta.setDir(getInstanceDirectory(conf.getInstanceId()));
+                    } catch (IOException ex) {
+                        Logger.getLogger(LocalFileMinecraftServerInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    return meta;
+                }).collect(Collectors.toList());
     }
 
     @Override
@@ -85,26 +82,28 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
 
     @Override
     public MinecraftServerInstanceMetadata newInstance(String id) throws IOException {
-        if (!getInstancesNames().contains(id)) {
-            Properties defs = ctx.getAppProperties();
+        if (!getInstanceIds().contains(id)) {
 
-            Path instanceDir = Paths.get(ctx.getMinecraftInstancesDirectory().toString() + "/" + id);
-            Files.createDirectories(instanceDir);
+            Files.createDirectories(getInstanceDirectory(id));
 
-            MinecraftServerInstanceMetadata meta = new MinecraftServerInstanceMetadata();
-            meta.setId(id);
-            meta.setInitialMemory(defs.getProperty("instances.default.memory.initial"));
-            meta.setMaxMemory(defs.getProperty("instances.default.memory.max"));
-            meta.setVersionMetadata(versMan.getLatestVersion());
-            meta.setDir(Paths.get(ctx.getMinecraftInstancesDirectory().toString() + "/" + id));
-            
+            // TODO shouldn't have to tell it which version since default should be detected
+            MinecraftServerInstanceMetadata meta = ctx.newDefaultInstanceMetadata(id, versMan.getLatestVersion());
+
+            MinecraftServerInstanceConfiguration conf = new MinecraftServerInstanceConfiguration();
+            conf.setInstanceId(meta.getId());
+            conf.setInitialMemory(meta.getInitialMemory());
+            conf.setMaxMemory(meta.getMaxMemory());
+            conf.setVersionId(meta.getVersionMetadata().getId());
+
+            writeInstanceConfiguration(conf);
+
             return meta;
         } else {
             return null;
         }
     }
 
-    private List<String> getInstancesNames() throws IOException {
+    private List<String> getInstanceIds() throws IOException {
         ImmutableList.Builder<String> lb = ImmutableList.builder();
 
         Path dir = ctx.getMinecraftInstancesDirectory();
@@ -117,5 +116,27 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
         }
 
         return lb.build();
+    }
+
+    private Path getInstanceDirectory(String id) {
+        return Paths.get(ctx.getMinecraftInstancesDirectory() + "/" + id);
+    }
+
+    // TODO should probably cache instance json
+    private MinecraftServerInstanceConfiguration getInstanceConfiguration(String id) throws IOException {
+        String configPath = getInstanceDirectory(id).toString() + "/instance.json";
+        try (FileReader r = new FileReader(configPath)) {
+            return gson.fromJson(r, MinecraftServerInstanceConfiguration.class);
+        }
+    }
+
+    private void writeInstanceConfiguration(MinecraftServerInstanceConfiguration conf) throws IOException {
+        Path configPath = Paths.get(getInstanceDirectory(conf.getInstanceId()).toString() + "/instance.json");
+        if (Files.notExists(configPath)) {
+            Files.createFile(configPath);
+        }
+        try (FileWriter w = new FileWriter(configPath.toFile())) {
+            w.write(gson.toJson(conf));
+        }
     }
 }
