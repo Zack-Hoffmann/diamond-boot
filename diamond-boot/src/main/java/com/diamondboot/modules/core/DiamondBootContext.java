@@ -16,7 +16,7 @@
 package com.diamondboot.modules.core;
 
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -25,9 +25,14 @@ import java.util.List;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public interface DiamondBootContext {
+
     Path getAppDirectory();
+
     Path getMinecraftVersionsDirectory();
+
     Path getMinecraftInstancesDirectory();
+
     List<String> getStartOnLaunchInstances();
-    MinecraftServerInstanceMetadata newDefaultInstanceMetadata(String id, MinecraftVersionMetadata servMeta);
+
+    MinecraftServerInstanceMetadata newDefaultInstanceMetadata(String id) throws IOException;
 }

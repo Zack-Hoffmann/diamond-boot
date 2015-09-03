@@ -20,7 +20,6 @@ import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionMa
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -87,7 +85,7 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
             Files.createDirectories(getInstanceDirectory(id));
 
             // TODO shouldn't have to tell it which version since default should be detected
-            MinecraftServerInstanceMetadata meta = ctx.newDefaultInstanceMetadata(id, versMan.getLatestVersion());
+            MinecraftServerInstanceMetadata meta = ctx.newDefaultInstanceMetadata(id);
 
             MinecraftServerInstanceConfiguration conf = new MinecraftServerInstanceConfiguration();
             conf.setInstanceId(meta.getId());

@@ -15,12 +15,7 @@
  */
 package com.diamondboot.modules.minecraftserver.proxy;
 
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
-import com.diamondboot.modules.minecraftserver.instances.LocalFileMinecraftServerInstanceManager;
-import com.diamondboot.modules.minecraftserver.versions.RemoteJsonMinecraftServerVersionManager;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 

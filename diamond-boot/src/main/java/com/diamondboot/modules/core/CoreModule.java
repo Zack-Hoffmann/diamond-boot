@@ -16,6 +16,8 @@
 package com.diamondboot.modules.core;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+import com.google.inject.name.Names;
 
 /**
  *
@@ -31,7 +33,8 @@ public class CoreModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(DiamondBootContext.class).toProvider(new DiamondBootContextProvider(appDir));
+        bind(String.class).annotatedWith(Names.named("appDir")).toInstance(appDir);
+        bind(DiamondBootContext.class).to(LocalFileDiamondBootContext.class).in(Scopes.SINGLETON);
     }
 
 }
