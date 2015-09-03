@@ -17,7 +17,6 @@ package com.diamondboot.modules.core;
 
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import com.google.gson.Gson;
 import com.google.inject.name.Named;
 import java.io.FileReader;
@@ -27,8 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 
 /**
@@ -41,6 +38,7 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
     private final Path appConf;
     private MinecraftServerVersionManager verMan;
     private final Gson gson = new Gson();
+    private final DiamondBootConfig conf;
 
     private final Path mcVersDir;
     private final Path mcInstDir;
@@ -71,15 +69,13 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
             throw new IllegalArgumentException("Diamond Boot cannot be started in the provided directory \"" + appDir + "\".", e);
         }
 
-        DiamondBootConfig conf = new DiamondBootConfig();
         try (FileReader r = new FileReader(appConf.toFile())) {
             conf = gson.fromJson(r, DiamondBootConfig.class);
-        } catch (IOException ex) {
-            Logger.getLogger(LocalFileDiamondBootContext.class.getName()).log(
-                    Level.SEVERE,
+        } catch (IOException e) {
+            throw new IllegalArgumentException(
                     "The properties file at \"" + appConf + "\" could not be used.  "
                     + "Ensure that the file is valid and readable, or delete the file and restart the application to restore default values.",
-                    ex);
+                    e);
         }
 
         mcVersDir = Paths.get(appDir + "/" + conf.versions.dir);
@@ -115,7 +111,12 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
         meta.setId(id);
         meta.setInitialMemory(initialMemory);
         meta.setMaxMemory(maxMemory);
-        meta.setVersionMetadata(verMan.getLatestVersion());
+
+        if (conf.instances.defaults.version.equals("RECENT")) {
+            meta.setVersionMetadata(verMan.getLatestVersion());
+        } else {
+            meta.setVersionMetadata(verMan.getInstalledVersion(conf.instances.defaults.version).get());
+        }
         meta.setDir(Paths.get(mcInstDir.toString() + "/" + id));
 
         return meta;
