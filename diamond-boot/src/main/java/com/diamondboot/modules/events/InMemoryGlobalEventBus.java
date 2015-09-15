@@ -13,31 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
+package com.diamondboot.modules.events;
 
-import com.diamondboot.modules.events.InMemoryGlobalEventBus;
-import com.diamondboot.modules.events.MinecraftServerEventBus;
-import com.diamondboot.modules.events.MinecraftServerEventPublisher;
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import com.google.inject.name.Names;
+import com.google.common.collect.Lists;
+import java.util.List;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class CoreModule extends AbstractModule {
+public class InMemoryGlobalEventBus implements MinecraftServerEventPublisher, MinecraftServerEventBus {
 
-    private final String appDir;
+    private final List<MinecraftServerEventListener> serverEventListeners = Lists.newArrayList();
 
-    public CoreModule(String appDir) {
-        this.appDir = appDir;
+    @Override
+    public void publish(MinecraftServerEvent e) {
+        serverEventListeners.stream().forEach(l -> l.onMinecraftServerEvent(e));
     }
 
     @Override
-    protected void configure() {
-        bind(String.class).annotatedWith(Names.named("appDir")).toInstance(appDir);
-        bind(DiamondBootContext.class).to(LocalFileDiamondBootContext.class).in(Scopes.SINGLETON);
+    public void addListener(MinecraftServerEventListener l) {
+        serverEventListeners.add(l);
     }
 
 }

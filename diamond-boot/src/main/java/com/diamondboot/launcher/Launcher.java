@@ -17,8 +17,8 @@ package com.diamondboot.launcher;
 
 import com.diamondboot.modules.core.CoreModule;
 import com.diamondboot.modules.core.DiamondBootContext;
-import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxy;
-import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyFactory;
+import com.diamondboot.modules.events.EventsModule;
+import com.diamondboot.modules.events.MinecraftServerEventBus;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyModule;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstancesModule;
@@ -26,10 +26,7 @@ import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionsM
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -39,76 +36,46 @@ import javax.inject.Inject;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public class Launcher implements Runnable {
-
+    
     public static void main(String... args) {
         try {
             String appDir = args.length > 0 ? args[0]
                     : (System.getProperty("user.home") + "/diamond-boot");
-
+            
             final List allModules = ImmutableList.of(
                     new MinecraftServerProxyModule(),
                     new MinecraftServerVersionsModule(),
                     new MinecraftServerInstancesModule(),
+                    new EventsModule(),
                     new CoreModule(appDir));
             Guice.createInjector(allModules).getInstance(Launcher.class).run();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
     }
-
+    
     private final DiamondBootContext ctx;
-    private final MinecraftServerProxyFactory pxf;
     private final MinecraftServerInstanceManager instMan;
-
+    private final MinecraftServerEventBus eventObs;
+    
     @Inject
-    public Launcher(MinecraftServerProxyFactory pxf, DiamondBootContext ctx, MinecraftServerInstanceManager instMan) {
-        this.pxf = pxf;
+    public Launcher(MinecraftServerEventBus eventObs, DiamondBootContext ctx, MinecraftServerInstanceManager instMan) {
         this.ctx = ctx;
         this.instMan = instMan;
+        this.eventObs = eventObs;
     }
-
+    
     @Override
     public void run() {
-
-        final Scanner mainIn = new Scanner(System.in);
-
+        eventObs.addListener(e -> System.out.println("[" + e.getInstanceMetadata().getId() + "]" + e.getContent()));
         ctx.getStartOnLaunchInstances().stream().forEach(i -> {
             try {
-                if (!instMan.getInstance(i).isPresent()) {
-                    instMan.newInstance(i);
-                }
-                final MinecraftServerProxy px = pxf.create(i);
-                px.start();
-
-                final Scanner pxIn = new Scanner(px.getInputStream());
-                final PrintStream pxOut = new PrintStream(px.getOutputStream());
-
-                // TODO better solution for I/O.  message queues?
-                new Thread(() -> {
-                    while (px.isRunning()) {
-                        if (pxIn.hasNextLine()) {
-                            System.out.println("[" + i + "]" + pxIn.nextLine());
-                        }
-                    }
-                }).start();
-
-                new Thread(() -> {
-                    while (px.isRunning()) {
-                        try {
-                            if (System.in.available() > 0 && mainIn.hasNextLine()) {
-                                pxOut.println(mainIn.nextLine());
-                                pxOut.flush();
-                            }
-                        } catch (IOException ex) {
-                            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }).start();
+                instMan.runInstance(i);
             } catch (IOException ex) {
                 Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-
+        
     }
-
+    
 }

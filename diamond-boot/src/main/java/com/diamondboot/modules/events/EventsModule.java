@@ -13,31 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
+package com.diamondboot.modules.events;
 
-import com.diamondboot.modules.events.InMemoryGlobalEventBus;
-import com.diamondboot.modules.events.MinecraftServerEventBus;
-import com.diamondboot.modules.events.MinecraftServerEventPublisher;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import com.google.inject.name.Names;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class CoreModule extends AbstractModule {
-
-    private final String appDir;
-
-    public CoreModule(String appDir) {
-        this.appDir = appDir;
-    }
+public class EventsModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(String.class).annotatedWith(Names.named("appDir")).toInstance(appDir);
-        bind(DiamondBootContext.class).to(LocalFileDiamondBootContext.class).in(Scopes.SINGLETON);
+        bind(InMemoryGlobalEventBus.class).in(Scopes.SINGLETON);
+        bind(MinecraftServerEventBus.class).to(InMemoryGlobalEventBus.class);
+        bind(MinecraftServerEventPublisher.class).to(InMemoryGlobalEventBus.class);
     }
 
 }

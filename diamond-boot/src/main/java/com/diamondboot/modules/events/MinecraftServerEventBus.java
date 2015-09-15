@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.instances;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+package com.diamondboot.modules.events;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftServerInstanceManager {
-
-    List<MinecraftServerInstanceMetadata> getInstances() throws IOException;
-    Optional<MinecraftServerInstanceMetadata> getInstance(String id) throws IOException;
-    MinecraftServerInstanceMetadata newInstance(String id) throws IOException;
-    void runInstance(String id) throws IOException;
+public interface MinecraftServerEventBus {
+    
+    void addListener(MinecraftServerEventListener l);
 }
