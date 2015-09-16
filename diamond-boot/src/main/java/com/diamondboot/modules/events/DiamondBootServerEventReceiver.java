@@ -19,7 +19,7 @@ package com.diamondboot.modules.events;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftServerEventBus {
-    
-    void addListener(MinecraftServerEventListener l);
+public interface DiamondBootServerEventReceiver {
+
+    public void addListener(DiamondBootServerEventListener l);
 }

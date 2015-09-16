@@ -15,10 +15,7 @@
  */
 package com.diamondboot.modules.minecraftserver.instances;
 
-import com.diamondboot.launcher.Launcher;
 import com.diamondboot.modules.core.DiamondBootContext;
-import com.diamondboot.modules.events.MinecraftServerEvent;
-import com.diamondboot.modules.events.MinecraftServerEventPublisher;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxy;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyFactory;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
@@ -28,14 +25,12 @@ import com.google.gson.Gson;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -50,19 +45,15 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
     private final DiamondBootContext ctx;
     private final MinecraftServerVersionManager versMan;
     private final MinecraftServerProxyFactory pxf;
-    private final MinecraftServerEventPublisher eventPub;
-    private final Scanner mainIn = new Scanner(System.in);
     private final Gson gson = new Gson();
 
     @Inject
     public LocalFileMinecraftServerInstanceManager(DiamondBootContext ctx,
             MinecraftServerVersionManager versMan,
-            MinecraftServerProxyFactory pxf,
-            MinecraftServerEventPublisher eventPub) {
+            MinecraftServerProxyFactory pxf) {
         this.versMan = versMan;
         this.ctx = ctx;
         this.pxf = pxf;
-        this.eventPub = eventPub;
     }
 
     @Override
@@ -153,36 +144,8 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
 
     @Override
     public void runInstance(String id) throws IOException {
-
-        // TODO maybe don't auto-create instance?
-        final MinecraftServerInstanceMetadata meta = getInstance(id).orElse(newInstance(id));
-
         final MinecraftServerProxy px = pxf.create(id);
         px.start();
 
-        final Scanner pxIn = new Scanner(px.getInputStream());
-        final PrintStream pxOut = new PrintStream(px.getOutputStream());
-
-        // TODO better solution for I/O.  message queues?  got one direction going, just need input
-        new Thread(() -> {
-            while (px.isRunning()) {
-                if (pxIn.hasNextLine()) {
-                    eventPub.publish(MinecraftServerEvent.newInstance(meta, pxIn.nextLine()));
-                }
-            }
-        }).start();
-
-        new Thread(() -> {
-            while (px.isRunning()) {
-                try {
-                    if (System.in.available() > 0 && mainIn.hasNextLine()) {
-                        pxOut.println(mainIn.nextLine());
-                        pxOut.flush();
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }).start();
     }
 }

@@ -16,24 +16,71 @@
 package com.diamondboot.modules.events;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import java.util.List;
+import java.util.Queue;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class InMemoryGlobalEventBus implements MinecraftServerEventPublisher, MinecraftServerEventBus {
+public class InMemoryGlobalEventBus implements EventBus {
 
-    private final List<MinecraftServerEventListener> serverEventListeners = Lists.newArrayList();
+    private final List<MinecraftServerEventListener> mcServerEventListeners = Lists.newArrayList();
+    private final Queue<MinecraftServerEvent> mcServerEventQueue = Queues.newConcurrentLinkedQueue();
+    private final List<DiamondBootServerEventListener> dbServerEventListeners = Lists.newArrayList();
+    private final Queue<DiamondBootServerEvent> dbServerEventQueue = Queues.newConcurrentLinkedQueue();
+    private boolean running = true;
 
     @Override
     public void publish(MinecraftServerEvent e) {
-        serverEventListeners.stream().forEach(l -> l.onMinecraftServerEvent(e));
+        mcServerEventQueue.add(e);
     }
 
     @Override
     public void addListener(MinecraftServerEventListener l) {
-        serverEventListeners.add(l);
+        mcServerEventListeners.add(l);
+    }
+
+    @Override
+    public void publish(DiamondBootServerEvent e) {
+        dbServerEventQueue.add(e);
+    }
+
+    @Override
+    public void addListener(DiamondBootServerEventListener l) {
+        dbServerEventListeners.add(l);
+    }
+
+    @Override
+    public void start() {
+        new Thread(() -> {
+            while (isRunning()) {
+                final MinecraftServerEvent e = mcServerEventQueue.poll();
+                if (e != null) {
+                    mcServerEventListeners.stream().forEach(l -> l.onMinecraftServerEvent(e));
+                }
+            }
+        }).start();
+
+        new Thread(() -> {
+            while (isRunning()) {
+                final DiamondBootServerEvent e = dbServerEventQueue.poll();
+                if (e != null) {
+                    dbServerEventListeners.stream().forEach(l -> l.onDiamondBootServerEvent(e));
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public void stop() {
+        running = false;
+    }
+
+    @Override
+    public final boolean isRunning() {
+        return running;
     }
 
 }

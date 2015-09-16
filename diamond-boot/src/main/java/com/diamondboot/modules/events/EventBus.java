@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import com.google.inject.name.Names;
+package com.diamondboot.modules.events;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class CoreModule extends AbstractModule {
-    
-    private final String appDir;
-    
-    public CoreModule(String appDir) {
-        this.appDir = appDir;
-    }
-    
-    @Override
-    protected void configure() {
-        bind(String.class).annotatedWith(Names.named("appDir")).toInstance(appDir);
-        bind(DiamondBootContext.class).to(LocalFileDiamondBootContext.class).in(Scopes.SINGLETON);
-        bind(DiamondBootConsole.class).in(Scopes.SINGLETON);
-    }
-    
+public interface EventBus extends MinecraftServerEventPublisher,
+        MinecraftServerEventReceiver, DiamondBootServerEventPublisher,
+        DiamondBootServerEventReceiver {
+
+    void start();
+
+    void stop();
+
+    boolean isRunning();
 }

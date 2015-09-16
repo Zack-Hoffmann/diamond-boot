@@ -27,8 +27,11 @@ public class EventsModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(InMemoryGlobalEventBus.class).in(Scopes.SINGLETON);
-        bind(MinecraftServerEventBus.class).to(InMemoryGlobalEventBus.class);
+        bind(MinecraftServerEventReceiver.class).to(InMemoryGlobalEventBus.class);
         bind(MinecraftServerEventPublisher.class).to(InMemoryGlobalEventBus.class);
+        bind(DiamondBootServerEventReceiver.class).to(InMemoryGlobalEventBus.class);
+        bind(DiamondBootServerEventPublisher.class).to(InMemoryGlobalEventBus.class);
+        bind(EventBus.class).to(InMemoryGlobalEventBus.class);
     }
 
 }

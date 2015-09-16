@@ -16,9 +16,11 @@
 package com.diamondboot.launcher;
 
 import com.diamondboot.modules.core.CoreModule;
+import com.diamondboot.modules.core.DiamondBootConsole;
 import com.diamondboot.modules.core.DiamondBootContext;
+import com.diamondboot.modules.events.EventBus;
 import com.diamondboot.modules.events.EventsModule;
-import com.diamondboot.modules.events.MinecraftServerEventBus;
+import com.diamondboot.modules.events.MinecraftServerEvent;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyModule;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstancesModule;
@@ -36,12 +38,12 @@ import javax.inject.Inject;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public class Launcher implements Runnable {
-    
+
     public static void main(String... args) {
         try {
             String appDir = args.length > 0 ? args[0]
                     : (System.getProperty("user.home") + "/diamond-boot");
-            
+
             final List allModules = ImmutableList.of(
                     new MinecraftServerProxyModule(),
                     new MinecraftServerVersionsModule(),
@@ -53,21 +55,25 @@ public class Launcher implements Runnable {
             e.printStackTrace(System.err);
         }
     }
-    
+
     private final DiamondBootContext ctx;
     private final MinecraftServerInstanceManager instMan;
-    private final MinecraftServerEventBus eventObs;
-    
+    private final EventBus eventBus;
+    private final DiamondBootConsole con;
+
     @Inject
-    public Launcher(MinecraftServerEventBus eventObs, DiamondBootContext ctx, MinecraftServerInstanceManager instMan) {
+    public Launcher(EventBus eventBus, DiamondBootContext ctx, MinecraftServerInstanceManager instMan, DiamondBootConsole con) {
         this.ctx = ctx;
         this.instMan = instMan;
-        this.eventObs = eventObs;
+        this.eventBus = eventBus;
+        this.con = con;
     }
-    
+
     @Override
     public void run() {
-        eventObs.addListener(e -> System.out.println("[" + e.getInstanceMetadata().getId() + "]" + e.getContent()));
+        con.start();
+        eventBus.start();
+
         ctx.getStartOnLaunchInstances().stream().forEach(i -> {
             try {
                 instMan.runInstance(i);
@@ -75,7 +81,7 @@ public class Launcher implements Runnable {
                 Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        
+
     }
-    
+
 }
