@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
+package com.diamondboot.modules.web;
 
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.inject.Scopes;
+import com.google.inject.servlet.ServletModule;
+import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface DiamondBootContext {
-
-    Path getAppDirectory();
-
-    Path getMinecraftVersionsDirectory();
-
-    Path getMinecraftInstancesDirectory();
-
-    List<String> getStartOnLaunchInstances();
-
-    MinecraftServerInstanceMetadata newDefaultInstanceMetadata(String id) throws IOException;
-
-    public int getWebServerPort();
+public class ServletsModule extends ServletModule {
+    
+    @Override
+    protected void configureServlets() {
+        bind(InstanceService.class);
+        
+        bind(GuiceContainer.class);
+        bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
+        
+        serve("/*").with(GuiceContainer.class);
+    }  
+    
 }

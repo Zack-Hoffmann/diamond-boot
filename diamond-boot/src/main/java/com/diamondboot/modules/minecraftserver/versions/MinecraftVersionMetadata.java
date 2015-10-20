@@ -15,6 +15,8 @@
  */
 package com.diamondboot.modules.minecraftserver.versions;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import java.util.Optional;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
+@JsonIgnoreProperties({"jarFile"})
 public class MinecraftVersionMetadata {
 
     private String id;
@@ -65,6 +68,16 @@ public class MinecraftVersionMetadata {
 
     public Optional<Path> getJarFile(){
         return Optional.ofNullable(jarFile);
+    }
+    
+    @JsonProperty("jarFile")
+    public String getJarFileStr() {
+        if (getJarFile().isPresent()) {
+            return getJarFile().get().toString();
+        }
+        else {
+            return "Not Installed";
+        }
     }
     
     public void setJarFile(Path jarFile) {

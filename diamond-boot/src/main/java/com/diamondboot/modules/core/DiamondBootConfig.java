@@ -33,6 +33,7 @@ public class DiamondBootConfig {
         def.instances.defaults.maximumMemory = "1024M";
         def.instances.defaults.version = "RECENT";
         def.instances.startOnLaunch = Arrays.asList("default-inst");
+        def.webServer.port = 8080;
         return def;
     }
 
@@ -54,7 +55,12 @@ public class DiamondBootConfig {
         public String dir;
         public List<String> startOnLaunch = ImmutableList.of();
     }
+    
+    public static class WebServer {
+        public int port;
+    }
 
     public Versions versions = new Versions();
     public Instances instances = new Instances();
+    public WebServer webServer = new WebServer();
 }

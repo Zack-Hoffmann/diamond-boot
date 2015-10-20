@@ -16,12 +16,15 @@
 package com.diamondboot.modules.minecraftserver.instances;
 
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.nio.file.Path;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
+@JsonIgnoreProperties({"dir"})
 public class MinecraftServerInstanceMetadata {
 
     private String id;
@@ -45,7 +48,7 @@ public class MinecraftServerInstanceMetadata {
     public void setMaxMemory(String maxMemory) {
         this.maxMemory = maxMemory;
     }
-
+    
     public String getInitialMemory() {
         return initialMemory;
     }
@@ -64,6 +67,11 @@ public class MinecraftServerInstanceMetadata {
 
     public Path getDir() {
         return dir;
+    }
+    
+    @JsonProperty("path")
+    public String getDirString() {
+        return dir.toString();
     }
 
     public void setDir(Path dir) {

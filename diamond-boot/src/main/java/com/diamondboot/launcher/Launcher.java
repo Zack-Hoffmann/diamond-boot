@@ -20,11 +20,13 @@ import com.diamondboot.modules.core.DiamondBootConsole;
 import com.diamondboot.modules.core.DiamondBootContext;
 import com.diamondboot.modules.events.EventBus;
 import com.diamondboot.modules.events.EventsModule;
-import com.diamondboot.modules.events.MinecraftServerEvent;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyModule;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstancesModule;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionsModule;
+import com.diamondboot.modules.web.DiamondBootWebServer;
+import com.diamondboot.modules.web.ServletsModule;
+import com.diamondboot.modules.web.WebServerModule;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import java.io.IOException;
@@ -49,6 +51,8 @@ public class Launcher implements Runnable {
                     new MinecraftServerVersionsModule(),
                     new MinecraftServerInstancesModule(),
                     new EventsModule(),
+                    new WebServerModule(),
+                    new ServletsModule(),
                     new CoreModule(appDir));
             Guice.createInjector(allModules).getInstance(Launcher.class).run();
         } catch (Exception e) {
@@ -60,13 +64,19 @@ public class Launcher implements Runnable {
     private final MinecraftServerInstanceManager instMan;
     private final EventBus eventBus;
     private final DiamondBootConsole con;
+    private final DiamondBootWebServer webServ;
 
     @Inject
-    public Launcher(EventBus eventBus, DiamondBootContext ctx, MinecraftServerInstanceManager instMan, DiamondBootConsole con) {
+    public Launcher(EventBus eventBus,
+            DiamondBootContext ctx,
+            MinecraftServerInstanceManager instMan,
+            DiamondBootConsole con,
+            DiamondBootWebServer webServ) {
         this.ctx = ctx;
         this.instMan = instMan;
         this.eventBus = eventBus;
         this.con = con;
+        this.webServ = webServ;
     }
 
     @Override
@@ -81,6 +91,8 @@ public class Launcher implements Runnable {
                 Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        
+        webServ.start();
 
     }
 

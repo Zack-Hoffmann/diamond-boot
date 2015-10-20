@@ -13,28 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
+package com.diamondboot.modules.web;
 
+import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface DiamondBootContext {
-
-    Path getAppDirectory();
-
-    Path getMinecraftVersionsDirectory();
-
-    Path getMinecraftInstancesDirectory();
-
-    List<String> getStartOnLaunchInstances();
-
-    MinecraftServerInstanceMetadata newDefaultInstanceMetadata(String id) throws IOException;
-
-    public int getWebServerPort();
+@Singleton
+@Produces(MediaType.APPLICATION_JSON)
+@Path("/instances")
+public class InstanceService {
+    
+    private final MinecraftServerInstanceManager instances;
+    
+    @Inject
+    public InstanceService(MinecraftServerInstanceManager instances) {
+        this.instances = instances;
+    }
+    
+    @GET
+    public List<MinecraftServerInstanceMetadata> getInstances() throws IOException {
+        return instances.getInstances();
+    }
 }

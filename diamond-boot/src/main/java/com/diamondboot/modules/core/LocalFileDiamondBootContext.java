@@ -122,4 +122,9 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
         return meta;
     }
 
+    @Override
+    public int getWebServerPort() {
+        return conf.webServer.port;
+    }
+
 }
