@@ -33,4 +33,6 @@ public interface MinecraftServerProxy {
 
     OutputStream getOutputStream() throws IOException;
 
+    public void stop() throws IOException;
+
 }

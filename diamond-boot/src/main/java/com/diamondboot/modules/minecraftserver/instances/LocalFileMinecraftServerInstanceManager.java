@@ -21,6 +21,7 @@ import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyFactory
 import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -30,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +48,8 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
     private final MinecraftServerVersionManager versMan;
     private final MinecraftServerProxyFactory pxf;
     private final Gson gson = new Gson();
+    private final Map<String,MinecraftServerProxy> runningProxies = 
+            Maps.newHashMap();
 
     @Inject
     public LocalFileMinecraftServerInstanceManager(DiamondBootContext ctx,
@@ -71,6 +75,14 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
                         meta.setMaxMemory(conf.getMaxMemory());
                         meta.setVersionMetadata(vers);
                         meta.setDir(getInstanceDirectory(conf.getInstanceId()));
+                        
+                        MinecraftServerProxy px = runningProxies.get(i);
+                        if (px == null || !px.isRunning()) {
+                            meta.setRunning(false);
+                        }
+                        else {
+                            meta.setRunning(true);
+                        }
                     } catch (IOException ex) {
                         Logger.getLogger(LocalFileMinecraftServerInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -143,9 +155,17 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
     }
 
     @Override
-    public void runInstance(String id) throws IOException {
+    public void startInstance(String id) throws IOException {
         final MinecraftServerProxy px = pxf.create(id);
         px.start();
+        runningProxies.put(id, px);
+    }
 
+    @Override
+    public void stopInstance(String id) throws IOException {
+        final MinecraftServerProxy px = runningProxies.get(id);
+        if (px != null) {
+            px.stop();
+        }
     }
 }

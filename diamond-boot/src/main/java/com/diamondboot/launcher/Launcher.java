@@ -86,7 +86,7 @@ public class Launcher implements Runnable {
 
         ctx.getStartOnLaunchInstances().stream().forEach(i -> {
             try {
-                instMan.runInstance(i);
+                instMan.startInstance(i);
             } catch (IOException ex) {
                 Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
             }

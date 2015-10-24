@@ -46,6 +46,7 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
     private final MinecraftServerInstanceManager instMan;
     private final MinecraftServerEventPublisher eventPub;
     private final DiamondBootServerEventReceiver eventRec;
+    private final MinecraftServerInstanceMetadata instMeta;
 
     private Process proc = null;
 
@@ -56,19 +57,19 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
             MinecraftServerInstanceManager instMan,
             @Assisted String instance,
             MinecraftServerEventPublisher eventPub,
-            DiamondBootServerEventReceiver eventRec) {
+            DiamondBootServerEventReceiver eventRec) throws IOException {
         this.ctx = ctx;
         this.verMan = verMan;
         this.instMan = instMan;
         this.instance = instance;
         this.eventPub = eventPub;
         this.eventRec = eventRec;
+        this.instMeta = instMan.getInstance(instance).get();
+
     }
 
     @Override
     public void start() throws IOException {
-
-        MinecraftServerInstanceMetadata instMeta = instMan.getInstance(instance).get();
 
         String verStr = instMeta.getVersionMetadata().getId();
         Optional<MinecraftVersionMetadata> version = verMan.getInstalledVersion(verStr);
@@ -122,6 +123,16 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
     @Override
     public boolean isRunning() {
         return proc.isAlive();
+    }
+
+    @Override
+    public void stop() throws IOException {
+        try (PrintStream pxOut = new PrintStream(getOutputStream());) {
+            pxOut.println("stop");
+            pxOut.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(ProcessBuilderMinecraftServerProxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

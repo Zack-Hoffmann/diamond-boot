@@ -19,12 +19,19 @@ import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstance
 import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -43,7 +50,44 @@ public class InstanceService {
     }
     
     @GET
-    public List<MinecraftServerInstanceMetadata> getInstances() throws IOException {
-        return instances.getInstances();
+    public List<MinecraftServerInstanceMetadata> getInstances() {
+        try {
+            return instances.getInstances();
+        } catch (IOException ex) {
+            throw new WebApplicationException(ex);
+        }
     }
+    
+    @GET @Path("{id}")
+    public MinecraftServerInstanceMetadata getInstance(@PathParam("id") String id) {
+        try {
+            return instances.getInstance(id).orElseThrow(() -> {
+                return new WebApplicationException(Response.Status.NOT_FOUND);
+            });
+        } catch (IOException ex) {
+            throw new WebApplicationException(ex);
+        }
+    }
+    
+    @POST @Path("{id}")
+    public Response performInstanceAction(@PathParam("id") String id, @FormParam("action") String action) {
+        
+        Response r  = Response.status(Response.Status.BAD_REQUEST).build();
+        
+        try {
+            switch(action) {
+                case "start":
+                    instances.startInstance(id);
+                    break;
+                case "stop":
+                    instances.stopInstance(id);
+                    break;
+            }    
+        } catch (IOException ex) {
+            throw new WebApplicationException(ex);
+        }
+        
+        return r;
+    }
+    
 }

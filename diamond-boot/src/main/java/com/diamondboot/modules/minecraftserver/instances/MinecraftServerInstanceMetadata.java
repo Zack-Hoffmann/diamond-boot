@@ -32,6 +32,7 @@ public class MinecraftServerInstanceMetadata {
     private String initialMemory;
     private MinecraftVersionMetadata versionMetadata;
     private Path dir;
+    private boolean running;
 
     public String getId() {
         return id;
@@ -48,7 +49,7 @@ public class MinecraftServerInstanceMetadata {
     public void setMaxMemory(String maxMemory) {
         this.maxMemory = maxMemory;
     }
-    
+
     public String getInitialMemory() {
         return initialMemory;
     }
@@ -68,7 +69,7 @@ public class MinecraftServerInstanceMetadata {
     public Path getDir() {
         return dir;
     }
-    
+
     @JsonProperty("path")
     public String getDirString() {
         return dir.toString();
@@ -76,6 +77,14 @@ public class MinecraftServerInstanceMetadata {
 
     public void setDir(Path dir) {
         this.dir = dir;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
 }
