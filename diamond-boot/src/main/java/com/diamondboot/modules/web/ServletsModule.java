@@ -29,6 +29,7 @@ public class ServletsModule extends ServletModule {
     @Override
     protected void configureServlets() {
         bind(InstanceService.class);
+        bind(VersionService.class);
         
         bind(GuiceContainer.class);
         bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);

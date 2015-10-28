@@ -100,13 +100,13 @@ public class RemoteJsonMinecraftVersionManager implements MinecraftVersionManage
 
     @Override
     public MinecraftVersionMetadata installVersion(String version) throws IOException {
+        version = !version.equals("RECENT") ? version : this.getLatestVersion().getId();
+        
         if (getInstalledDatMap().get(version) == null) {
 
-            String ver = getLatestVersion().getId();
-
-            String fileName = "minecraft_server." + ver + ".jar";
+            String fileName = "minecraft_server." + version + ".jar";
             Path jarFile = Paths.get(ctx.getMinecraftVersionsDirectory().toString() + "/" + fileName);
-            String fullDownloadUrl = baseUrl + ver + "/" + fileName;
+            String fullDownloadUrl = baseUrl + version + "/" + fileName;
 
             if (Files.notExists(jarFile)) {
                 HttpURLConnection con = (HttpURLConnection) new URL(fullDownloadUrl).openConnection();
@@ -118,7 +118,7 @@ public class RemoteJsonMinecraftVersionManager implements MinecraftVersionManage
                 }
             }
 
-            Files.write(getInstalledDat(), (ver + " " + jarFile.getFileName().toString() + "\n").getBytes(), StandardOpenOption.APPEND);
+            Files.write(getInstalledDat(), (version + " " + jarFile.getFileName().toString() + "\n").getBytes(), StandardOpenOption.APPEND);
         }
 
         return getInstalledVersion(version);
