@@ -61,9 +61,7 @@ public class InstanceService {
     @GET @Path("{id}")
     public MinecraftServerInstanceMetadata getInstance(@PathParam("id") String id) {
         try {
-            return instances.getInstance(id).orElseThrow(() -> {
-                return new WebApplicationException(Response.Status.NOT_FOUND);
-            });
+            return instances.getInstance(id);
         } catch (IOException ex) {
             throw new WebApplicationException(ex);
         }
@@ -82,7 +80,8 @@ public class InstanceService {
                 case "stop":
                     instances.stopInstance(id);
                     break;
-            }    
+            }
+            r = Response.ok().build();
         } catch (IOException ex) {
             throw new WebApplicationException(ex);
         }

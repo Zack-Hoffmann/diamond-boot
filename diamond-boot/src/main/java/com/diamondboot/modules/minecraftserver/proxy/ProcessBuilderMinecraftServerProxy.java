@@ -64,7 +64,7 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
         this.instance = instance;
         this.eventPub = eventPub;
         this.eventRec = eventRec;
-        this.instMeta = instMan.getInstance(instance).get();
+        this.instMeta = instMan.getInstance(instance);
 
     }
 

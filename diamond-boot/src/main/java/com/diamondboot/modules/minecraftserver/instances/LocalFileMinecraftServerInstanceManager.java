@@ -20,6 +20,7 @@ import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxy;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyFactory;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
+import com.diamondboot.utilities.Exceptions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -48,8 +49,8 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
     private final MinecraftServerVersionManager versMan;
     private final MinecraftServerProxyFactory pxf;
     private final Gson gson = new Gson();
-    private final Map<String,MinecraftServerProxy> runningProxies = 
-            Maps.newHashMap();
+    private final Map<String, MinecraftServerProxy> runningProxies
+            = Maps.newHashMap();
 
     @Inject
     public LocalFileMinecraftServerInstanceManager(DiamondBootContext ctx,
@@ -75,12 +76,11 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
                         meta.setMaxMemory(conf.getMaxMemory());
                         meta.setVersionMetadata(vers);
                         meta.setDir(getInstanceDirectory(conf.getInstanceId()));
-                        
+
                         MinecraftServerProxy px = runningProxies.get(i);
                         if (px == null || !px.isRunning()) {
                             meta.setRunning(false);
-                        }
-                        else {
+                        } else {
                             meta.setRunning(true);
                         }
                     } catch (IOException ex) {
@@ -91,8 +91,9 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
     }
 
     @Override
-    public Optional<MinecraftServerInstanceMetadata> getInstance(String id) throws IOException {
-        return getInstances().stream().filter(i -> i.getId().equals(id)).findFirst();
+    public MinecraftServerInstanceMetadata getInstance(String id) throws IOException {
+        Optional<MinecraftServerInstanceMetadata> meta = getInstances().stream().filter(i -> i.getId().equals(id)).findFirst();
+        return meta.orElseThrow(() -> Exceptions.invalidParameter("Instance %s does not exist.", id));
     }
 
     @Override
@@ -155,10 +156,12 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
     }
 
     @Override
-    public void startInstance(String id) throws IOException {
-        final MinecraftServerProxy px = pxf.create(id);
-        px.start();
-        runningProxies.put(id, px);
+    public synchronized void startInstance(String id) throws IOException {
+        if (!getInstance(id).isRunning()) {
+            final MinecraftServerProxy px = pxf.create(id);
+            px.start();
+            runningProxies.put(id, px);
+        }
     }
 
     @Override
