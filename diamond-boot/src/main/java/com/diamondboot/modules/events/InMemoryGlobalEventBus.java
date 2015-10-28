@@ -26,10 +26,10 @@ import java.util.Queue;
  */
 public class InMemoryGlobalEventBus implements EventBus {
 
-    private final List<MinecraftServerEventListener> mcServerEventListeners = Lists.newArrayList();
+    private final List<MinecraftEventListener> mcServerEventListeners = Lists.newArrayList();
     private final Queue<MinecraftServerEvent> mcServerEventQueue = Queues.newConcurrentLinkedQueue();
-    private final List<DiamondBootServerEventListener> dbServerEventListeners = Lists.newArrayList();
-    private final Queue<DiamondBootServerEvent> dbServerEventQueue = Queues.newConcurrentLinkedQueue();
+    private final List<DiamondBootEventListener> dbServerEventListeners = Lists.newArrayList();
+    private final Queue<DiamondBootEvent> dbServerEventQueue = Queues.newConcurrentLinkedQueue();
     private boolean running = true;
 
     @Override
@@ -38,17 +38,17 @@ public class InMemoryGlobalEventBus implements EventBus {
     }
 
     @Override
-    public void addListener(MinecraftServerEventListener l) {
+    public void addListener(MinecraftEventListener l) {
         mcServerEventListeners.add(l);
     }
 
     @Override
-    public void publish(DiamondBootServerEvent e) {
+    public void publish(DiamondBootEvent e) {
         dbServerEventQueue.add(e);
     }
 
     @Override
-    public void addListener(DiamondBootServerEventListener l) {
+    public void addListener(DiamondBootEventListener l) {
         dbServerEventListeners.add(l);
     }
 
@@ -65,7 +65,7 @@ public class InMemoryGlobalEventBus implements EventBus {
 
         new Thread(() -> {
             while (isRunning()) {
-                final DiamondBootServerEvent e = dbServerEventQueue.poll();
+                final DiamondBootEvent e = dbServerEventQueue.poll();
                 if (e != null) {
                     dbServerEventListeners.stream().forEach(l -> l.onDiamondBootServerEvent(e));
                 }

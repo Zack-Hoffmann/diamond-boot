@@ -15,25 +15,10 @@
  */
 package com.diamondboot.modules.minecraftserver.proxy;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.name.Names;
-
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class MinecraftServerProxyModule extends AbstractModule {
-
-    @Override
-    protected void configure() {
-        // TODO move to config file
-        bind(String.class).annotatedWith(Names.named("mcVersionsBaseUrl")).toInstance("https://s3.amazonaws.com/Minecraft.Download/versions/");
-        bind(String.class).annotatedWith(Names.named("mcVersionsJsonUrl")).toInstance("versions.json");
-  
-        install(new FactoryModuleBuilder()
-                .implement(MinecraftServerProxy.class, ProcessBuilderMinecraftServerProxy.class)
-                .build(MinecraftServerProxyFactory.class));
-    }
-
+public interface MinecraftProxyFactory {
+    MinecraftProxy create(String instance);
 }

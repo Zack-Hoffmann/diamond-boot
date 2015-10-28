@@ -15,8 +15,8 @@
  */
 package com.diamondboot.modules.web;
 
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManager;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,15 +42,15 @@ import javax.ws.rs.core.Response;
 @Path("/instances")
 public class InstanceService {
     
-    private final MinecraftServerInstanceManager instances;
+    private final MinecraftInstanceManager instances;
     
     @Inject
-    public InstanceService(MinecraftServerInstanceManager instances) {
+    public InstanceService(MinecraftInstanceManager instances) {
         this.instances = instances;
     }
     
     @GET
-    public List<MinecraftServerInstanceMetadata> getInstances() {
+    public List<MinecraftInstanceMetadata> getInstances() {
         try {
             return instances.getInstances();
         } catch (IOException ex) {
@@ -59,7 +59,7 @@ public class InstanceService {
     }
     
     @GET @Path("{id}")
-    public MinecraftServerInstanceMetadata getInstance(@PathParam("id") String id) {
+    public MinecraftInstanceMetadata getInstance(@PathParam("id") String id) {
         try {
             return instances.getInstance(id);
         } catch (IOException ex) {

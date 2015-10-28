@@ -41,14 +41,14 @@ import javax.inject.Named;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class RemoteJsonMinecraftServerVersionManager implements MinecraftServerVersionManager {
+public class RemoteJsonMinecraftVersionManager implements MinecraftVersionManager {
 
     private final String jsonUrlStr;
     private final String baseUrl;
     private final DiamondBootContext ctx;
 
     @Inject
-    public RemoteJsonMinecraftServerVersionManager(
+    public RemoteJsonMinecraftVersionManager(
             @Named("mcVersionsBaseUrl") String baseUrl,
             @Named("mcVersionsJsonUrl") String jsonUrl,
             DiamondBootContext ctx

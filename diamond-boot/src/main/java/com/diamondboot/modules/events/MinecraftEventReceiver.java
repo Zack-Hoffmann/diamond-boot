@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.instances;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
+package com.diamondboot.modules.events;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class MinecraftServerInstancesModule extends AbstractModule {
-
-    @Override
-    protected void configure() {
-        bind(MinecraftServerInstanceManager.class).to(LocalFileMinecraftServerInstanceManager.class).in(Scopes.SINGLETON);
-    }
+public interface MinecraftEventReceiver {
     
+    void addListener(MinecraftEventListener l);
 }

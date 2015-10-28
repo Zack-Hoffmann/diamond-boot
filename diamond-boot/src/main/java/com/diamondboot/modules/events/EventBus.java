@@ -19,9 +19,9 @@ package com.diamondboot.modules.events;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface EventBus extends MinecraftServerEventPublisher,
-        MinecraftServerEventReceiver, DiamondBootServerEventPublisher,
-        DiamondBootServerEventReceiver {
+public interface EventBus extends MinecraftEventPublisher,
+        MinecraftEventReceiver, DiamondBootEventPublisher,
+        DiamondBootEventReceiver {
 
     void start();
 

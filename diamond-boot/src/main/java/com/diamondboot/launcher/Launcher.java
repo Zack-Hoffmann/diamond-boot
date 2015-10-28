@@ -20,10 +20,10 @@ import com.diamondboot.modules.core.DiamondBootConsole;
 import com.diamondboot.modules.core.DiamondBootContext;
 import com.diamondboot.modules.events.EventBus;
 import com.diamondboot.modules.events.EventsModule;
-import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyModule;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstancesModule;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionsModule;
+import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxyModule;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManager;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftInstancesModule;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionModule;
 import com.diamondboot.modules.web.DiamondBootWebServer;
 import com.diamondboot.modules.web.ServletsModule;
 import com.diamondboot.modules.web.WebServerModule;
@@ -46,10 +46,9 @@ public class Launcher implements Runnable {
             String appDir = args.length > 0 ? args[0]
                     : (System.getProperty("user.home") + "/diamond-boot");
 
-            final List allModules = ImmutableList.of(
-                    new MinecraftServerProxyModule(),
-                    new MinecraftServerVersionsModule(),
-                    new MinecraftServerInstancesModule(),
+            final List allModules = ImmutableList.of(new MinecraftProxyModule(),
+                    new MinecraftVersionModule(),
+                    new MinecraftInstancesModule(),
                     new EventsModule(),
                     new WebServerModule(),
                     new ServletsModule(),
@@ -61,7 +60,7 @@ public class Launcher implements Runnable {
     }
 
     private final DiamondBootContext ctx;
-    private final MinecraftServerInstanceManager instMan;
+    private final MinecraftInstanceManager instMan;
     private final EventBus eventBus;
     private final DiamondBootConsole con;
     private final DiamondBootWebServer webServ;
@@ -69,7 +68,7 @@ public class Launcher implements Runnable {
     @Inject
     public Launcher(EventBus eventBus,
             DiamondBootContext ctx,
-            MinecraftServerInstanceManager instMan,
+            MinecraftInstanceManager instMan,
             DiamondBootConsole con,
             DiamondBootWebServer webServ) {
         this.ctx = ctx;

@@ -15,8 +15,8 @@
  */
 package com.diamondboot.modules.core;
 
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionManager;
 import com.google.gson.Gson;
 import com.google.inject.name.Named;
 import java.io.FileReader;
@@ -36,7 +36,7 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
 
     private final Path appDir;
     private final Path appConf;
-    private MinecraftServerVersionManager verMan;
+    private MinecraftVersionManager verMan;
     private final Gson gson = new Gson();
     private final DiamondBootConfig conf;
 
@@ -48,7 +48,7 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
 
     @Inject
     public LocalFileDiamondBootContext(@Named("appDir") String appDir,
-            MinecraftServerVersionManager verMan) {
+            MinecraftVersionManager verMan) {
         this.appDir = Paths.get(appDir);
         this.verMan = verMan;
 
@@ -106,8 +106,8 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
     }
 
     @Override
-    public MinecraftServerInstanceMetadata newDefaultInstanceMetadata(String id) throws IOException {
-        MinecraftServerInstanceMetadata meta = new MinecraftServerInstanceMetadata();
+    public MinecraftInstanceMetadata newDefaultInstanceMetadata(String id) throws IOException {
+        MinecraftInstanceMetadata meta = new MinecraftInstanceMetadata();
         meta.setId(id);
         meta.setInitialMemory(initialMemory);
         meta.setMaxMemory(maxMemory);

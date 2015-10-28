@@ -15,18 +15,18 @@
  */
 package com.diamondboot.modules.minecraftserver.instances;
 
-import java.io.IOException;
-import java.util.List;
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftServerInstanceManager {
+public class MinecraftInstancesModule extends AbstractModule {
 
-    List<MinecraftServerInstanceMetadata> getInstances() throws IOException;
-    MinecraftServerInstanceMetadata getInstance(String id) throws IOException;
-    MinecraftServerInstanceMetadata newInstance(String id) throws IOException;
-    void startInstance(String id) throws IOException;
-    void stopInstance(String id) throws IOException;
+    @Override
+    protected void configure() {
+        bind(MinecraftInstanceManager.class).to(LocalMinecraftInstanceManager.class).in(Scopes.SINGLETON);
+    }
+    
 }

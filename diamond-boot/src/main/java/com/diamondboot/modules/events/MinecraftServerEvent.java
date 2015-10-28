@@ -15,7 +15,7 @@
  */
 package com.diamondboot.modules.events;
 
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
 
 /**
  *
@@ -23,21 +23,21 @@ import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstance
  */
 public class MinecraftServerEvent {
     
-    public static MinecraftServerEvent newInstance(MinecraftServerInstanceMetadata meta, String content) {
+    public static MinecraftServerEvent newInstance(MinecraftInstanceMetadata meta, String content) {
         MinecraftServerEvent e = new MinecraftServerEvent();
         e.setContent(content);
         e.setInstanceMetadata(meta);
         return e;
     }
 
-    private MinecraftServerInstanceMetadata instanceMetadata;
+    private MinecraftInstanceMetadata instanceMetadata;
     private String content;
 
-    public MinecraftServerInstanceMetadata getInstanceMetadata() {
+    public MinecraftInstanceMetadata getInstanceMetadata() {
         return instanceMetadata;
     }
 
-    public void setInstanceMetadata(MinecraftServerInstanceMetadata instanceMetadata) {
+    public void setInstanceMetadata(MinecraftInstanceMetadata instanceMetadata) {
         this.instanceMetadata = instanceMetadata;
     }
 

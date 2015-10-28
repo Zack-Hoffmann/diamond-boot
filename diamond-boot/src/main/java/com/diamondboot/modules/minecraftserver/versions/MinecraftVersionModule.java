@@ -15,26 +15,18 @@
  */
 package com.diamondboot.modules.minecraftserver.versions;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftServerVersionManager {
+public class MinecraftVersionModule extends AbstractModule {
 
-    MinecraftReleasesMetadata getReleasesMetadata() throws IOException;
-
-    List<MinecraftVersionMetadata> getAvailableVersions() throws IOException;
-
-    MinecraftVersionMetadata getLatestVersion() throws IOException;
-
-    List<MinecraftVersionMetadata> getInstalledVersions() throws IOException;
+    @Override
+    protected void configure() {
+        bind(MinecraftVersionManager.class).to(RemoteJsonMinecraftVersionManager.class).in(Scopes.SINGLETON);
+    }
     
-    Optional<MinecraftVersionMetadata> getInstalledVersion(String version) throws IOException;
-
-    MinecraftVersionMetadata installVersion(String version) throws IOException;
-
 }

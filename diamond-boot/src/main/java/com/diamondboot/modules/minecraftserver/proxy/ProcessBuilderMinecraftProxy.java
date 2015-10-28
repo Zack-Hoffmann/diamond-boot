@@ -16,12 +16,12 @@
 package com.diamondboot.modules.minecraftserver.proxy;
 
 import com.diamondboot.modules.core.DiamondBootContext;
-import com.diamondboot.modules.events.DiamondBootServerEventReceiver;
+import com.diamondboot.modules.events.DiamondBootEventReceiver;
 import com.diamondboot.modules.events.MinecraftServerEvent;
-import com.diamondboot.modules.events.MinecraftServerEventPublisher;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceManager;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftServerInstanceMetadata;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
+import com.diamondboot.modules.events.MinecraftEventPublisher;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManager;
+import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionManager;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import com.google.inject.assistedinject.Assisted;
 import java.io.IOException;
@@ -38,26 +38,26 @@ import javax.inject.Inject;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy {
+public class ProcessBuilderMinecraftProxy implements MinecraftProxy {
 
     private final String instance;
     private final DiamondBootContext ctx;
-    private final MinecraftServerVersionManager verMan;
-    private final MinecraftServerInstanceManager instMan;
-    private final MinecraftServerEventPublisher eventPub;
-    private final DiamondBootServerEventReceiver eventRec;
-    private final MinecraftServerInstanceMetadata instMeta;
+    private final MinecraftVersionManager verMan;
+    private final MinecraftInstanceManager instMan;
+    private final MinecraftEventPublisher eventPub;
+    private final DiamondBootEventReceiver eventRec;
+    private final MinecraftInstanceMetadata instMeta;
 
     private Process proc = null;
 
     @Inject
-    public ProcessBuilderMinecraftServerProxy(
+    public ProcessBuilderMinecraftProxy(
             DiamondBootContext ctx,
-            MinecraftServerVersionManager verMan,
-            MinecraftServerInstanceManager instMan,
+            MinecraftVersionManager verMan,
+            MinecraftInstanceManager instMan,
             @Assisted String instance,
-            MinecraftServerEventPublisher eventPub,
-            DiamondBootServerEventReceiver eventRec) throws IOException {
+            MinecraftEventPublisher eventPub,
+            DiamondBootEventReceiver eventRec) throws IOException {
         this.ctx = ctx;
         this.verMan = verMan;
         this.instMan = instMan;
@@ -94,7 +94,7 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
                     }
                 }
             } catch (IOException ex) {
-                Logger.getLogger(ProcessBuilderMinecraftServerProxy.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ProcessBuilderMinecraftProxy.class.getName()).log(Level.SEVERE, null, ex);
             }
         }).start();
 
@@ -105,7 +105,7 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
                     pxOut.flush();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(ProcessBuilderMinecraftServerProxy.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ProcessBuilderMinecraftProxy.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }
@@ -131,7 +131,7 @@ public class ProcessBuilderMinecraftServerProxy implements MinecraftServerProxy 
             pxOut.println("stop");
             pxOut.flush();
         } catch (IOException ex) {
-            Logger.getLogger(ProcessBuilderMinecraftServerProxy.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ProcessBuilderMinecraftProxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

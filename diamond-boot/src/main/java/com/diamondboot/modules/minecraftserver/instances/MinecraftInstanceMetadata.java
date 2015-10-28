@@ -15,23 +15,31 @@
  */
 package com.diamondboot.modules.minecraftserver.instances;
 
+import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.nio.file.Path;
+
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class MinecraftServerInstanceConfiguration {
+@JsonIgnoreProperties({"dir"})
+public class MinecraftInstanceMetadata {
 
-    private String instanceId;
+    private String id;
     private String maxMemory;
     private String initialMemory;
-    private String versionId;
+    private MinecraftVersionMetadata versionMetadata;
+    private Path dir;
+    private boolean running;
 
-    public String getInstanceId() {
-        return instanceId;
+    public String getId() {
+        return id;
     }
 
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getMaxMemory() {
@@ -50,12 +58,33 @@ public class MinecraftServerInstanceConfiguration {
         this.initialMemory = initialMemory;
     }
 
-    public String getVersionId() {
-        return versionId;
+    public MinecraftVersionMetadata getVersionMetadata() {
+        return versionMetadata;
     }
 
-    public void setVersionId(String versionId) {
-        this.versionId = versionId;
+    public void setVersionMetadata(MinecraftVersionMetadata versionMetadata) {
+        this.versionMetadata = versionMetadata;
+    }
+
+    public Path getDir() {
+        return dir;
+    }
+
+    @JsonProperty("path")
+    public String getDirString() {
+        return dir.toString();
+    }
+
+    public void setDir(Path dir) {
+        this.dir = dir;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
 }

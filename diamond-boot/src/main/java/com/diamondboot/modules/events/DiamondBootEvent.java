@@ -19,18 +19,18 @@ package com.diamondboot.modules.events;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class DiamondBootServerEvent {
+public class DiamondBootEvent {
 
     public static final String ALL_INSTANCES = "#ALL#";
 
-    public static DiamondBootServerEvent newEvent(String targetInstance, String content) {
-        DiamondBootServerEvent e = new DiamondBootServerEvent();
+    public static DiamondBootEvent newEvent(String targetInstance, String content) {
+        DiamondBootEvent e = new DiamondBootEvent();
         e.setContent(content);
         e.setTargetInstance(targetInstance);
         return e;
     }
 
-    public static DiamondBootServerEvent newAllInstanceEvent(String content) {
+    public static DiamondBootEvent newAllInstanceEvent(String content) {
         return newEvent(ALL_INSTANCES, content);
     }
 

@@ -15,10 +15,10 @@
  */
 package com.diamondboot.modules.core;
 
-import com.diamondboot.modules.events.DiamondBootServerEvent;
-import com.diamondboot.modules.events.DiamondBootServerEventPublisher;
+import com.diamondboot.modules.events.DiamondBootEvent;
+import com.diamondboot.modules.events.DiamondBootEventPublisher;
 import com.diamondboot.modules.events.MinecraftServerEvent;
-import com.diamondboot.modules.events.MinecraftServerEventReceiver;
+import com.diamondboot.modules.events.MinecraftEventReceiver;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -33,12 +33,12 @@ public class DiamondBootConsole {
 
     private boolean running = false;
     private final Scanner sc = new Scanner(System.in);
-    private final MinecraftServerEventReceiver eventRec;
-    private final DiamondBootServerEventPublisher eventPub;
+    private final MinecraftEventReceiver eventRec;
+    private final DiamondBootEventPublisher eventPub;
 
     @Inject
-    public DiamondBootConsole(MinecraftServerEventReceiver eventRec,
-            DiamondBootServerEventPublisher eventPub) {
+    public DiamondBootConsole(MinecraftEventReceiver eventRec,
+            DiamondBootEventPublisher eventPub) {
         this.eventRec = eventRec;
         this.eventPub = eventPub;
     }
@@ -52,7 +52,7 @@ public class DiamondBootConsole {
             while (isRunning()) {
                 try {
                     if (System.in.available() > 0 && sc.hasNextLine()) {
-                        eventPub.publish(DiamondBootServerEvent.newAllInstanceEvent(sc.nextLine()));
+                        eventPub.publish(DiamondBootEvent.newAllInstanceEvent(sc.nextLine()));
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(DiamondBootConsole.class.getName()).log(Level.SEVERE, null, ex);

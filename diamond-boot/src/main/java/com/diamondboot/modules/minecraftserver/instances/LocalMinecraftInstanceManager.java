@@ -16,9 +16,9 @@
 package com.diamondboot.modules.minecraftserver.instances;
 
 import com.diamondboot.modules.core.DiamondBootContext;
-import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxy;
-import com.diamondboot.modules.minecraftserver.proxy.MinecraftServerProxyFactory;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftServerVersionManager;
+import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxy;
+import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxyFactory;
+import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionManager;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import com.diamondboot.utilities.Exceptions;
 import com.google.common.collect.ImmutableList;
@@ -43,68 +43,68 @@ import javax.inject.Inject;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class LocalFileMinecraftServerInstanceManager implements MinecraftServerInstanceManager {
+public class LocalMinecraftInstanceManager implements MinecraftInstanceManager {
 
     private final DiamondBootContext ctx;
-    private final MinecraftServerVersionManager versMan;
-    private final MinecraftServerProxyFactory pxf;
+    private final MinecraftVersionManager versMan;
+    private final MinecraftProxyFactory pxf;
     private final Gson gson = new Gson();
-    private final Map<String, MinecraftServerProxy> runningProxies
+    private final Map<String, MinecraftProxy> runningProxies
             = Maps.newHashMap();
 
     @Inject
-    public LocalFileMinecraftServerInstanceManager(DiamondBootContext ctx,
-            MinecraftServerVersionManager versMan,
-            MinecraftServerProxyFactory pxf) {
+    public LocalMinecraftInstanceManager(DiamondBootContext ctx,
+            MinecraftVersionManager versMan,
+            MinecraftProxyFactory pxf) {
         this.versMan = versMan;
         this.ctx = ctx;
         this.pxf = pxf;
     }
 
     @Override
-    public List<MinecraftServerInstanceMetadata> getInstances() throws IOException {
+    public List<MinecraftInstanceMetadata> getInstances() throws IOException {
         return getInstanceIds().stream()
                 .map(i -> {
-                    MinecraftServerInstanceMetadata meta = null;
+                    MinecraftInstanceMetadata meta = null;
                     try {
-                        MinecraftServerInstanceConfiguration conf = getInstanceConfiguration(i);
+                        MinecraftInstanceConfiguration conf = getInstanceConfiguration(i);
                         MinecraftVersionMetadata vers = versMan.getInstalledVersion(conf.getVersionId()).orElse(versMan.getLatestVersion());
 
-                        meta = new MinecraftServerInstanceMetadata();
+                        meta = new MinecraftInstanceMetadata();
                         meta.setId(conf.getInstanceId());
                         meta.setInitialMemory(conf.getInitialMemory());
                         meta.setMaxMemory(conf.getMaxMemory());
                         meta.setVersionMetadata(vers);
                         meta.setDir(getInstanceDirectory(conf.getInstanceId()));
 
-                        MinecraftServerProxy px = runningProxies.get(i);
+                        MinecraftProxy px = runningProxies.get(i);
                         if (px == null || !px.isRunning()) {
                             meta.setRunning(false);
                         } else {
                             meta.setRunning(true);
                         }
                     } catch (IOException ex) {
-                        Logger.getLogger(LocalFileMinecraftServerInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(LocalMinecraftInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return meta;
                 }).collect(Collectors.toList());
     }
 
     @Override
-    public MinecraftServerInstanceMetadata getInstance(String id) throws IOException {
-        Optional<MinecraftServerInstanceMetadata> meta = getInstances().stream().filter(i -> i.getId().equals(id)).findFirst();
+    public MinecraftInstanceMetadata getInstance(String id) throws IOException {
+        Optional<MinecraftInstanceMetadata> meta = getInstances().stream().filter(i -> i.getId().equals(id)).findFirst();
         return meta.orElseThrow(() -> Exceptions.invalidParameter("Instance %s does not exist.", id));
     }
 
     @Override
-    public MinecraftServerInstanceMetadata newInstance(String id) throws IOException {
+    public MinecraftInstanceMetadata newInstance(String id) throws IOException {
         if (!getInstanceIds().contains(id)) {
 
             Files.createDirectories(getInstanceDirectory(id));
 
-            MinecraftServerInstanceMetadata meta = ctx.newDefaultInstanceMetadata(id);
+            MinecraftInstanceMetadata meta = ctx.newDefaultInstanceMetadata(id);
 
-            MinecraftServerInstanceConfiguration conf = new MinecraftServerInstanceConfiguration();
+            MinecraftInstanceConfiguration conf = new MinecraftInstanceConfiguration();
             conf.setInstanceId(meta.getId());
             conf.setInitialMemory(meta.getInitialMemory());
             conf.setMaxMemory(meta.getMaxMemory());
@@ -138,14 +138,14 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
     }
 
     // TODO should probably cache instance json
-    private MinecraftServerInstanceConfiguration getInstanceConfiguration(String id) throws IOException {
+    private MinecraftInstanceConfiguration getInstanceConfiguration(String id) throws IOException {
         String configPath = getInstanceDirectory(id).toString() + "/instance.json";
         try (FileReader r = new FileReader(configPath)) {
-            return gson.fromJson(r, MinecraftServerInstanceConfiguration.class);
+            return gson.fromJson(r, MinecraftInstanceConfiguration.class);
         }
     }
 
-    private void writeInstanceConfiguration(MinecraftServerInstanceConfiguration conf) throws IOException {
+    private void writeInstanceConfiguration(MinecraftInstanceConfiguration conf) throws IOException {
         Path configPath = Paths.get(getInstanceDirectory(conf.getInstanceId()).toString() + "/instance.json");
         if (Files.notExists(configPath)) {
             Files.createFile(configPath);
@@ -158,7 +158,7 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
     @Override
     public synchronized void startInstance(String id) throws IOException {
         if (!getInstance(id).isRunning()) {
-            final MinecraftServerProxy px = pxf.create(id);
+            final MinecraftProxy px = pxf.create(id);
             px.start();
             runningProxies.put(id, px);
         }
@@ -166,7 +166,7 @@ public class LocalFileMinecraftServerInstanceManager implements MinecraftServerI
 
     @Override
     public void stopInstance(String id) throws IOException {
-        final MinecraftServerProxy px = runningProxies.get(id);
+        final MinecraftProxy px = runningProxies.get(id);
         if (px != null) {
             px.stop();
         }

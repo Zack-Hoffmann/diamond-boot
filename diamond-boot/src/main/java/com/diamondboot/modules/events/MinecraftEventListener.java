@@ -13,26 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.proxy;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+package com.diamondboot.modules.events;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftServerProxy {
-
-    void start() throws IOException;
+public interface MinecraftEventListener {
     
-    boolean isRunning();
-
-    InputStream getInputStream() throws IOException;
-
-    OutputStream getOutputStream() throws IOException;
-
-    public void stop() throws IOException;
-
+    public void onMinecraftServerEvent(MinecraftServerEvent e);
+    
 }

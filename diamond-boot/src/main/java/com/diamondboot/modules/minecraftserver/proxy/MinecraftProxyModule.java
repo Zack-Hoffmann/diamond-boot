@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.versions;
+package com.diamondboot.modules.minecraftserver.proxy;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.name.Names;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class MinecraftServerVersionsModule extends AbstractModule {
+public class MinecraftProxyModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(MinecraftServerVersionManager.class).to(RemoteJsonMinecraftServerVersionManager.class).in(Scopes.SINGLETON);
+        // TODO move to config file
+        bind(String.class).annotatedWith(Names.named("mcVersionsBaseUrl")).toInstance("https://s3.amazonaws.com/Minecraft.Download/versions/");
+        bind(String.class).annotatedWith(Names.named("mcVersionsJsonUrl")).toInstance("versions.json");
+  
+        install(new FactoryModuleBuilder()
+                .implement(MinecraftProxy.class, ProcessBuilderMinecraftProxy.class)
+                .build(MinecraftProxyFactory.class));
     }
-    
+
 }

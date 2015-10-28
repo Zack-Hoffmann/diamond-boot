@@ -19,7 +19,7 @@ package com.diamondboot.modules.events;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface DiamondBootServerEventListener {
+public interface DiamondBootEventListener {
 
-    public void onDiamondBootServerEvent(DiamondBootServerEvent e);
+    public void onDiamondBootServerEvent(DiamondBootEvent e);
 }

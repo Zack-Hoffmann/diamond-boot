@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.proxy;
+package com.diamondboot.modules.events;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftServerProxyFactory {
-    MinecraftServerProxy create(String instance);
+public interface DiamondBootEventPublisher {
+
+    public void publish(DiamondBootEvent e);
 }
