@@ -68,7 +68,7 @@ public class LocalMinecraftInstanceManager implements MinecraftInstanceManager {
                     MinecraftInstanceMetadata meta = null;
                     try {
                         MinecraftInstanceConfiguration conf = getInstanceConfiguration(i);
-                        MinecraftVersionMetadata vers = versMan.getInstalledVersion(conf.getVersionId()).orElse(versMan.getLatestVersion());
+                        MinecraftVersionMetadata vers = versMan.getInstalledVersion(conf.getVersionId());
 
                         meta = new MinecraftInstanceMetadata();
                         meta.setId(conf.getInstanceId());

@@ -115,7 +115,7 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
         if (conf.instances.defaults.version.equals("RECENT")) {
             meta.setVersionMetadata(verMan.getLatestVersion());
         } else {
-            meta.setVersionMetadata(verMan.getInstalledVersion(conf.instances.defaults.version).get());
+            meta.setVersionMetadata(verMan.getInstalledVersion(conf.instances.defaults.version));
         }
         meta.setDir(Paths.get(mcInstDir.toString() + "/" + id));
 

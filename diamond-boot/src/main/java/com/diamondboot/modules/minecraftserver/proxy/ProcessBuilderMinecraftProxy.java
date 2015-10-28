@@ -71,14 +71,7 @@ public class ProcessBuilderMinecraftProxy implements MinecraftProxy {
     @Override
     public void start() throws IOException {
 
-        String verStr = instMeta.getVersionMetadata().getId();
-        Optional<MinecraftVersionMetadata> version = verMan.getInstalledVersion(verStr);
-
-        if (!version.isPresent()) {
-            verMan.installVersion(verStr);
-        }
-
-        String verJar = verMan.getInstalledVersion(verStr).get().getJarFile().get().toString();
+        String verJar = instMeta.getVersionMetadata().getJarFileStr();
 
         proc = new ProcessBuilder(
                 "java",

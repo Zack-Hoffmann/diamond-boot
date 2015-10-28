@@ -17,7 +17,6 @@ package com.diamondboot.modules.minecraftserver.versions;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  *
@@ -33,7 +32,7 @@ public interface MinecraftVersionManager {
 
     List<MinecraftVersionMetadata> getInstalledVersions() throws IOException;
     
-    Optional<MinecraftVersionMetadata> getInstalledVersion(String version) throws IOException;
+    MinecraftVersionMetadata getInstalledVersion(String version) throws IOException;
 
     MinecraftVersionMetadata installVersion(String version) throws IOException;
 

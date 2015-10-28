@@ -16,6 +16,7 @@
 package com.diamondboot.modules.minecraftserver.versions;
 
 import com.diamondboot.modules.core.DiamondBootContext;
+import com.diamondboot.utilities.Exceptions;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -120,12 +121,17 @@ public class RemoteJsonMinecraftVersionManager implements MinecraftVersionManage
             Files.write(getInstalledDat(), (ver + " " + jarFile.getFileName().toString() + "\n").getBytes(), StandardOpenOption.APPEND);
         }
 
-        return getInstalledVersion(version).get();
+        return getInstalledVersion(version);
     }
 
     @Override
-    public Optional<MinecraftVersionMetadata> getInstalledVersion(String version) throws IOException {
-        return getInstalledVersions().stream().filter(v -> v.getId().equals(version)).findFirst();
+    public MinecraftVersionMetadata getInstalledVersion(String version) throws IOException {
+        return getInstalledVersions().stream()
+                .filter(v -> v.getId().equals(version))
+                .findFirst()
+                .orElseThrow(
+                        () -> Exceptions.invalidParameter("Version %s is not installed.", version)
+                );
     }
 
     private Path getInstalledDat() throws IOException {
