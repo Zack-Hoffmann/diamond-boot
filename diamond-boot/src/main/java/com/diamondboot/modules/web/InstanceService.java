@@ -69,7 +69,6 @@ public class InstanceService {
     
     @POST @Path("{id}")
     public Response performInstanceAction(@PathParam("id") String id, @FormParam("action") String action) {
-        
         Response r  = Response.status(Response.Status.BAD_REQUEST).build();
         
         try {
@@ -79,6 +78,9 @@ public class InstanceService {
                     break;
                 case "stop":
                     instances.stopInstance(id);
+                    break;
+                case "create":
+                    instances.newInstance(id);
                     break;
             }
             r = Response.ok().build();
