@@ -34,7 +34,7 @@ public class ServletsModule extends ServletModule {
         bind(GuiceContainer.class);
         bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
         
-        serve("/*").with(GuiceContainer.class);
+        serve("/services/*").with(GuiceContainer.class);
     }  
     
 }

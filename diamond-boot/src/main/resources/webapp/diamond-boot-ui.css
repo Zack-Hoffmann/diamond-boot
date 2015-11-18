@@ -1,0 +1,51 @@
+body {
+    background-color: #EAEBED;
+    padding: 0;
+    margin: 0;
+}
+
+header {
+    background-color: #01A7C2;
+    margin: 0;
+    padding: 0.5em 0 0 0;
+    width: 100%;
+    color: white;
+}
+
+header a {
+    color: inherit;
+    text-decoration: none;
+}
+
+header>h1 {
+    margin: 0 1em;
+    display: inline-block;
+}
+
+header>nav {
+    display: inline-block;
+}
+
+nav>ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav>ul>li {
+    display: inline;
+}
+
+nav>ul>li>a {
+    display: inline-block;
+    width: available;
+    padding: 1em;
+}
+
+menu {
+    
+}
+
+section {
+    
+}
