@@ -13,31 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
+package com.diamondboot.modules.status;
 
-import com.diamondboot.launcher.Launcher;
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import com.google.inject.name.Names;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class CoreModule extends AbstractModule {
-    
-    private final String appDir;
-    
-    public CoreModule(String appDir) {
-        this.appDir = appDir;
-    }
-    
+public class StatusModule extends AbstractModule {
+
     @Override
     protected void configure() {
-        bind(String.class).annotatedWith(Names.named("appDir")).toInstance(appDir);
-        bind(String.class).annotatedWith(Names.named("diamondBootVersion")).toInstance(Launcher.DIAMOND_BOOT_VERSION);
-        bind(DiamondBootContext.class).to(LocalFileDiamondBootContext.class).in(Scopes.SINGLETON);
-        bind(DiamondBootConsole.class).in(Scopes.SINGLETON);
+        bind(StatusManager.class).to(StatusManagerImpl.class);
     }
-    
+ 
 }

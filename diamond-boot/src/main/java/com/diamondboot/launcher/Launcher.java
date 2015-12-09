@@ -24,6 +24,7 @@ import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxyModule;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManager;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftInstancesModule;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionModule;
+import com.diamondboot.modules.status.StatusModule;
 import com.diamondboot.modules.web.DiamondBootWebServer;
 import com.diamondboot.modules.web.ServletsModule;
 import com.diamondboot.modules.web.WebServerModule;
@@ -40,6 +41,8 @@ import javax.inject.Inject;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public class Launcher implements Runnable {
+    
+    public static final String DIAMOND_BOOT_VERSION = "alpha 1";
 
     public static void main(String... args) {
         try {
@@ -52,6 +55,7 @@ public class Launcher implements Runnable {
                     new EventsModule(),
                     new WebServerModule(),
                     new ServletsModule(),
+                    new StatusModule(),
                     new CoreModule(appDir));
             Guice.createInjector(allModules).getInstance(Launcher.class).run();
         } catch (Exception e) {

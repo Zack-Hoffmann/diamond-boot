@@ -19,8 +19,6 @@ import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManage
 import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.FormParam;

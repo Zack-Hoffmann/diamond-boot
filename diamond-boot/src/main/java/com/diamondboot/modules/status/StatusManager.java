@@ -13,29 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.web;
+package com.diamondboot.modules.status;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.google.inject.Scopes;
-import com.google.inject.servlet.ServletModule;
-import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import java.io.IOException;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class ServletsModule extends ServletModule {
-    
-    @Override
-    protected void configureServlets() {
-        bind(InstanceService.class);
-        bind(VersionService.class);
-        bind(StatusService.class);
-        
-        bind(GuiceContainer.class);
-        bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
-        
-        serve("/services/*").with(GuiceContainer.class);
-    }  
-    
+public interface StatusManager {
+    DiamondBootStatus getStatus() throws IOException;
 }
