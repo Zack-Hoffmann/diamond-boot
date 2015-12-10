@@ -18,8 +18,6 @@ package com.diamondboot.modules.web;
 import com.diamondboot.modules.core.DiamondBootContext;
 import com.google.inject.servlet.GuiceFilter;
 import java.util.EnumSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 import org.eclipse.jetty.server.Server;

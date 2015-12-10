@@ -16,9 +16,11 @@
 package com.diamondboot.modules.web;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Scopes;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 /**
  *
@@ -31,11 +33,14 @@ public class ServletsModule extends ServletModule {
         bind(InstanceService.class);
         bind(VersionService.class);
         bind(StatusService.class);
-        
         bind(GuiceContainer.class);
         bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
+        bind(CrossOriginFilter.class).in(Scopes.SINGLETON);
         
         serve("/services/*").with(GuiceContainer.class);
+        filter("/*").through(CrossOriginFilter.class, ImmutableMap.of(
+                "allowedOrigins", "*",
+                "allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD"));
     }  
     
 }
