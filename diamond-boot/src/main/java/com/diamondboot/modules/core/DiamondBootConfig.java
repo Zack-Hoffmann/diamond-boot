@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public class DiamondBootConfig {
+class DiamondBootConfig {
 
     public static DiamondBootConfig getDefaultConfig() {
         DiamondBootConfig def = new DiamondBootConfig();

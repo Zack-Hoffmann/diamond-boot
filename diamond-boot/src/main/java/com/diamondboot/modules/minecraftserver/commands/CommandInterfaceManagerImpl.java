@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.events;
+package com.diamondboot.modules.minecraftserver.commands;
+
+import javax.inject.Inject;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface EventBus extends MinecraftEventPublisher,
-        MinecraftEventReceiver, DiamondBootEventPublisher,
-        DiamondBootEventReceiver {
+public class CommandInterfaceManagerImpl implements CommandInterfaceManager {
 
-    void start();
-
-    void stop();
-
-    boolean isRunning();
+    private final OpCommandInterfaceFactory cif;
+    
+    @Inject
+    public CommandInterfaceManagerImpl(OpCommandInterfaceFactory cif) {
+        this.cif = cif;
+    }
+    
+    @Override
+    public OpCommandInterface getOpCommandInterface(String id) {
+        return cif.create(id);
+    }
+    
 }

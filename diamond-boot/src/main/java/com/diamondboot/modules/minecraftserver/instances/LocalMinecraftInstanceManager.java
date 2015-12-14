@@ -171,4 +171,5 @@ public class LocalMinecraftInstanceManager implements MinecraftInstanceManager {
             px.stop();
         }
     }
+
 }

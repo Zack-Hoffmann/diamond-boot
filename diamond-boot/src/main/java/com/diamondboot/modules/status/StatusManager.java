@@ -22,5 +22,5 @@ import java.io.IOException;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public interface StatusManager {
-    DiamondBootStatus getStatus() throws IOException;
+    DiamondBootStatus getStatus() throws IOException, InterruptedException;
 }

@@ -37,4 +37,6 @@ public interface DiamondBootContext {
     MinecraftInstanceMetadata newDefaultInstanceMetadata(String id) throws IOException;
 
     public int getWebServerPort();
+
+    public String getWebServerHostname();
 }

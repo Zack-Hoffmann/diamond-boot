@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.events;
+package com.diamondboot.modules.minecraftserver.commands;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface DiamondBootEventReceiver {
-
-    public void addListener(DiamondBootEventListener l);
+public interface CommandInterfaceManager {
+    
+    OpCommandInterface getOpCommandInterface(String id);
+    
 }

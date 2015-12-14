@@ -15,7 +15,9 @@
  */
 package com.diamondboot.modules.status;
 
-import com.diamondboot.modules.core.DiamondBootConfig;
+import com.diamondboot.modules.core.DiamondBootContext;
+import com.diamondboot.modules.minecraftserver.commands.CommandInterfaceManager;
+import com.diamondboot.modules.minecraftserver.commands.OpCommandInterface;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManager;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
 import com.diamondboot.modules.status.DiamondBootStatus.InstanceStatus;
@@ -31,36 +33,46 @@ import javax.inject.Inject;
 public class StatusManagerImpl implements StatusManager {
 
     private final MinecraftInstanceManager instMan;
-    private final DiamondBootConfig config;
+    private final CommandInterfaceManager ciMan;
+    private final DiamondBootContext context;
     private final String version;
-    
+
     @Inject
     public StatusManagerImpl(MinecraftInstanceManager instMan,
-            DiamondBootConfig config,
+            CommandInterfaceManager ciMan,
+            DiamondBootContext context,
             @Named("diamondBootVersion") String version) {
         this.instMan = instMan;
-        this.config = config;
+        this.ciMan = ciMan;
+        this.context = context;
         this.version = version;
     }
 
     @Override
-    public DiamondBootStatus getStatus() throws IOException {
+    public DiamondBootStatus getStatus() throws IOException, InterruptedException {
         DiamondBootStatus status = new DiamondBootStatus();
 
-        Map<String,InstanceStatus> instStats = status.getInstances();
-        
-        for (MinecraftInstanceMetadata meta: instMan.getInstances()) {
+        Map<String, InstanceStatus> instStats = status.getInstances();
+
+        for (MinecraftInstanceMetadata meta : instMan.getInstances()) {
+            OpCommandInterface ci = ciMan.getOpCommandInterface(meta.getId());
             InstanceStatus iStat = new InstanceStatus();
             iStat.setState(meta.isRunning() ? "Running" : "Stopped");
             iStat.setVersion(meta.getVersionMetadata().getId());
+            if (meta.isRunning()) {
+                iStat.setDayTime(ci.time("query", "daytime"));
+                iStat.setUpTime(ci.time("query", "gametime"));
+                iStat.setPlayersOnline(ci.list().size());
+                iStat.setMaxPlayersOnline(ci.maxPlayers());
+                iStat.setPlayersBanned(ci.banlist("players").size());
+            }
             instStats.put(meta.getId(), iStat);
-            // TODO call OpCommandInterface
         }
-        
-        status.setHostname(config.webServer.hostname);
-        status.setPort(config.webServer.port);
+
+        status.setHostname(context.getWebServerHostname());
+        status.setPort(context.getWebServerPort());
         status.setVersion(version);
-        
+
         return status;
     }
 

@@ -16,9 +16,9 @@
 package com.diamondboot.modules.core;
 
 import com.diamondboot.modules.events.DiamondBootEvent;
-import com.diamondboot.modules.events.DiamondBootEventPublisher;
 import com.diamondboot.modules.events.MinecraftServerEvent;
-import com.diamondboot.modules.events.MinecraftEventReceiver;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -33,26 +33,26 @@ public class DiamondBootConsole {
 
     private boolean running = false;
     private final Scanner sc = new Scanner(System.in);
-    private final MinecraftEventReceiver eventRec;
-    private final DiamondBootEventPublisher eventPub;
+    private final EventBus bus;
 
     @Inject
-    public DiamondBootConsole(MinecraftEventReceiver eventRec,
-            DiamondBootEventPublisher eventPub) {
-        this.eventRec = eventRec;
-        this.eventPub = eventPub;
+    public DiamondBootConsole(EventBus bus) {
+        this.bus = bus;
+    }
+    
+    @Subscribe
+    public void printToStdOut(MinecraftServerEvent e) {
+        System.out.println("[" + e.getInstanceMetadata().getId() + "]" + e.getContent());
     }
 
     public void start() {
-        eventRec.addListener((MinecraftServerEvent e) -> {
-            System.out.println("[" + e.getInstanceMetadata().getId() + "]" + e.getContent());
-        });
+        bus.register(this);
 
         new Thread(() -> {
             while (isRunning()) {
                 try {
                     if (System.in.available() > 0 && sc.hasNextLine()) {
-                        eventPub.publish(DiamondBootEvent.newAllInstanceEvent(sc.nextLine()));
+                        bus.post(DiamondBootEvent.newAllInstanceEvent(sc.nextLine()));
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(DiamondBootConsole.class.getName()).log(Level.SEVERE, null, ex);

@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.events;
+package com.diamondboot.modules.minecraftserver.commands;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftEventListener {
+public class CommandModule extends AbstractModule {
     
-    public void onMinecraftServerEvent(MinecraftServerEvent e);
+    @Override
+    protected void configure() {
+        bind(CommandInterfaceManager.class).to(CommandInterfaceManagerImpl.class).in(Scopes.SINGLETON);
+        install(new FactoryModuleBuilder()
+                .implement(OpCommandInterface.class, OpCommandInterfaceImpl.class)
+                .build(OpCommandInterfaceFactory.class));
+    }
     
 }

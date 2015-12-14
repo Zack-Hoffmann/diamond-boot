@@ -15,8 +15,14 @@
  */
 package com.diamondboot.modules.events;
 
+import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
+import com.google.inject.Provides;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import javax.inject.Singleton;
 
 /**
  *
@@ -25,13 +31,21 @@ import com.google.inject.Scopes;
 public class EventsModule extends AbstractModule {
 
     @Override
-    protected void configure() {
-        bind(InMemoryGlobalEventBus.class).in(Scopes.SINGLETON);
-        bind(MinecraftEventReceiver.class).to(InMemoryGlobalEventBus.class);
-        bind(MinecraftEventPublisher.class).to(InMemoryGlobalEventBus.class);
-        bind(DiamondBootEventReceiver.class).to(InMemoryGlobalEventBus.class);
-        bind(DiamondBootEventPublisher.class).to(InMemoryGlobalEventBus.class);
-        bind(EventBus.class).to(InMemoryGlobalEventBus.class);
+    public void configure() {
+        bind(EventBus.class).to(AsyncEventBus.class);
+    }
+
+    @Provides
+    @Singleton
+    Executor providesExecutor() {
+        // TODO make event thread pool configurable
+        return Executors.newFixedThreadPool(10);
+    }
+
+    @Provides
+    @Singleton
+    AsyncEventBus providesAsyncEventBus(Executor executor) {
+        return new AsyncEventBus(executor);
     }
 
 }

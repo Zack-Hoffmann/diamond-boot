@@ -46,7 +46,7 @@ public class StatusService {
     public DiamondBootStatus getStatus() {
         try {
             return statMan.getStatus();
-        } catch (IOException ex) {
+        } catch (IOException | InterruptedException ex) {
             throw new WebApplicationException(ex);
         }
     }

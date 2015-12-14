@@ -127,4 +127,9 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
         return conf.webServer.port;
     }
 
+    @Override
+    public String getWebServerHostname() {
+        return conf.webServer.hostname;
+    }
+
 }
