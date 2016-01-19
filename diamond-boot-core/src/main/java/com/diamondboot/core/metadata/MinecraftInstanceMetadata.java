@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.instances;
+package com.diamondboot.core.metadata;
 
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.nio.file.Path;
@@ -30,7 +29,7 @@ public class MinecraftInstanceMetadata {
     private String id;
     private String maxMemory;
     private String initialMemory;
-    private MinecraftVersionMetadata versionMetadata;
+    private String versionId;
     private Path dir;
     private boolean running;
 
@@ -58,12 +57,12 @@ public class MinecraftInstanceMetadata {
         this.initialMemory = initialMemory;
     }
 
-    public MinecraftVersionMetadata getVersionMetadata() {
-        return versionMetadata;
+    public String getVersionId() {
+        return versionId;
     }
 
-    public void setVersionMetadata(MinecraftVersionMetadata versionMetadata) {
-        this.versionMetadata = versionMetadata;
+    public void setVersionId(String versionId) {
+        this.versionId = versionId;
     }
 
     public Path getDir() {

@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.instances;
+package com.diamondboot.core.utility;
 
-import java.io.IOException;
-import java.util.List;
+import java.security.InvalidParameterException;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface MinecraftInstanceManager {
+public class Exceptions {
 
-    List<MinecraftInstanceMetadata> getInstances() throws IOException;
-    MinecraftInstanceMetadata getInstance(String id) throws IOException;
-    MinecraftInstanceMetadata newInstance(String id) throws IOException;
-    void startInstance(String id) throws IOException;
-    void stopInstance(String id) throws IOException;
+    public static InvalidParameterException invalidParameter(String message, Object... params) {
+        return new InvalidParameterException(String.format(message, params));
+    }
+
 }

@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.proxy;
+package com.diamondboot.serverproxy;
 
-import com.diamondboot.modules.core.DiamondBootContext;
-import com.diamondboot.modules.events.DiamondBootEvent;
-import com.diamondboot.modules.events.MinecraftServerEvent;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManager;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionManager;
+import com.diamondboot.core.event.DiamondBootEvent;
+import com.diamondboot.core.event.MinecraftServerEvent;
+import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
+import com.diamondboot.core.metadata.MinecraftVersionMetadata;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.assistedinject.Assisted;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,7 +28,6 @@ import java.io.PrintStream;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Inject;
 
 /**
  *
@@ -39,35 +35,25 @@ import javax.inject.Inject;
  */
 public class ProcessBuilderMinecraftProxy implements MinecraftProxy {
     
-    private final String instance;
-    private final DiamondBootContext ctx;
-    private final MinecraftVersionManager verMan;
-    private final MinecraftInstanceManager instMan;
     private final EventBus bus;
     private final MinecraftInstanceMetadata instMeta;
+    private final MinecraftVersionMetadata versMeta;
     
     private Process proc = null;
     
-    @Inject
     public ProcessBuilderMinecraftProxy(
-            DiamondBootContext ctx,
-            MinecraftVersionManager verMan,
-            MinecraftInstanceManager instMan,
-            @Assisted String instance,
+            MinecraftVersionMetadata versMeta,
+            MinecraftInstanceMetadata instMeta,
             EventBus bus) throws IOException {
-        this.ctx = ctx;
-        this.verMan = verMan;
-        this.instMan = instMan;
-        this.instance = instance;
         this.bus = bus;
-        this.instMeta = instMan.getInstance(instance);
-        
+        this.instMeta = instMeta;
+        this.versMeta = versMeta;
     }
     
     @Override
     public void start() throws IOException {
         
-        String verJar = instMeta.getVersionMetadata().getJarFileStr();
+        String verJar = versMeta.getJarFileStr();
         
         proc = new ProcessBuilder(
                 "java",

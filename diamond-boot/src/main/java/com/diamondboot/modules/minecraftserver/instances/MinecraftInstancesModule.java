@@ -15,6 +15,8 @@
  */
 package com.diamondboot.modules.minecraftserver.instances;
 
+import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
+import com.diamondboot.serverproxy.instance.LocalMinecraftInstanceManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 

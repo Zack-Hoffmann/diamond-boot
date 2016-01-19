@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.instances;
+package com.diamondboot.serverproxy.instance;
 
-import com.diamondboot.modules.core.DiamondBootContext;
-import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxy;
-import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxyFactory;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionManager;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
-import com.diamondboot.utilities.Exceptions;
+import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
+import com.diamondboot.core.DiamondBootContext;
+import com.diamondboot.serverproxy.MinecraftProxyFactory;
+import com.diamondboot.core.metadata.MinecraftVersionMetadata;
+import com.diamondboot.core.utility.Exceptions;
+import com.diamondboot.serverproxy.MinecraftProxy;
+import com.diamondboot.serverproxy.version.MinecraftVersionManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -74,7 +75,7 @@ public class LocalMinecraftInstanceManager implements MinecraftInstanceManager {
                         meta.setId(conf.getInstanceId());
                         meta.setInitialMemory(conf.getInitialMemory());
                         meta.setMaxMemory(conf.getMaxMemory());
-                        meta.setVersionMetadata(vers);
+                        meta.setVersionId(vers.getId());
                         meta.setDir(getInstanceDirectory(conf.getInstanceId()));
 
                         MinecraftProxy px = runningProxies.get(i);
@@ -108,7 +109,7 @@ public class LocalMinecraftInstanceManager implements MinecraftInstanceManager {
             conf.setInstanceId(meta.getId());
             conf.setInitialMemory(meta.getInitialMemory());
             conf.setMaxMemory(meta.getMaxMemory());
-            conf.setVersionId(meta.getVersionMetadata().getId());
+            conf.setVersionId(meta.getVersionId());
 
             writeInstanceConfiguration(conf);
 

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.versions;
+package com.diamondboot.serverproxy.version;
 
+import com.diamondboot.core.metadata.MinecraftVersionMetadata;
 import java.io.IOException;
 import java.util.List;
 

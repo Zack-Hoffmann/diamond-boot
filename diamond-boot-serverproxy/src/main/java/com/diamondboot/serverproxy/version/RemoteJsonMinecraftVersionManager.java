@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.versions;
+package com.diamondboot.serverproxy.version;
 
-import com.diamondboot.modules.core.DiamondBootContext;
-import com.diamondboot.utilities.Exceptions;
+import com.diamondboot.core.metadata.MinecraftVersionMetadata;
+import com.diamondboot.core.DiamondBootContext;
+import com.diamondboot.core.utility.Exceptions;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +33,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;

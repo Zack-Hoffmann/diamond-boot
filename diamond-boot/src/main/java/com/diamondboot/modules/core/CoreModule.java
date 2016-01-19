@@ -15,6 +15,8 @@
  */
 package com.diamondboot.modules.core;
 
+import com.diamondboot.core.LocalFileDiamondBootContext;
+import com.diamondboot.core.DiamondBootContext;
 import com.diamondboot.launcher.Launcher;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;

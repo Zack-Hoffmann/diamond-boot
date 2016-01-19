@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.events;
+package com.diamondboot.core.event;
 
-import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
+import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 
 /**
  *

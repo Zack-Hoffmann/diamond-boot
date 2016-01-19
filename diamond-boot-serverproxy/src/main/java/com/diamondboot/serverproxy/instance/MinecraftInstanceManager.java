@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
+package com.diamondboot.serverproxy.instance;
 
-import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
+import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface DiamondBootContext {
+public interface MinecraftInstanceManager {
 
-    Path getAppDirectory();
-
-    Path getMinecraftVersionsDirectory();
-
-    Path getMinecraftInstancesDirectory();
-
-    List<String> getStartOnLaunchInstances();
-
-    MinecraftInstanceMetadata newDefaultInstanceMetadata(String id) throws IOException;
-
-    public int getWebServerPort();
-
-    public String getWebServerHostname();
+    List<MinecraftInstanceMetadata> getInstances() throws IOException;
+    MinecraftInstanceMetadata getInstance(String id) throws IOException;
+    MinecraftInstanceMetadata newInstance(String id) throws IOException;
+    void startInstance(String id) throws IOException;
+    void stopInstance(String id) throws IOException;
 }

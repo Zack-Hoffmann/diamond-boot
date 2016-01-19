@@ -15,7 +15,7 @@
  */
 package com.diamondboot.modules.web;
 
-import com.diamondboot.modules.core.DiamondBootContext;
+import com.diamondboot.core.DiamondBootContext;
 import com.google.inject.servlet.GuiceFilter;
 import java.util.EnumSet;
 import javax.inject.Inject;

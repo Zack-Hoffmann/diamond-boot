@@ -15,7 +15,12 @@
  */
 package com.diamondboot.modules.minecraftserver.proxy;
 
+import com.diamondboot.serverproxy.MinecraftProxyFactory;
+import com.diamondboot.serverproxy.ProcessBuilderMinecraftProxy;
+import com.diamondboot.serverproxy.MinecraftProxy;
+import com.diamondboot.serverproxy.ProcessBuilderMinecraftProxyFactory;
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
@@ -30,10 +35,7 @@ public class MinecraftProxyModule extends AbstractModule {
         // TODO move to config file
         bind(String.class).annotatedWith(Names.named("mcVersionsBaseUrl")).toInstance("https://s3.amazonaws.com/Minecraft.Download/versions/");
         bind(String.class).annotatedWith(Names.named("mcVersionsJsonUrl")).toInstance("versions.json");
-  
-        install(new FactoryModuleBuilder()
-                .implement(MinecraftProxy.class, ProcessBuilderMinecraftProxy.class)
-                .build(MinecraftProxyFactory.class));
+        bind(MinecraftProxyFactory.class).to(ProcessBuilderMinecraftProxyFactory.class).in(Scopes.SINGLETON);
     }
 
 }

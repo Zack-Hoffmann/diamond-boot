@@ -15,8 +15,8 @@
  */
 package com.diamondboot.modules.web;
 
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionManager;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionMetadata;
+import com.diamondboot.serverproxy.version.MinecraftVersionManager;
+import com.diamondboot.core.metadata.MinecraftVersionMetadata;
 import java.io.IOException;
 import java.util.List;
 import javax.inject.Inject;

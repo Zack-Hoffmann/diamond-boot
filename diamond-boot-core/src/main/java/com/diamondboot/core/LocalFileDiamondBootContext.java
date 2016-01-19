@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
+package com.diamondboot.core;
 
-import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
-import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionManager;
+import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 import com.google.gson.Gson;
-import com.google.inject.name.Named;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
@@ -36,7 +35,6 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
 
     private final Path appDir;
     private final Path appConf;
-    private MinecraftVersionManager verMan;
     private final Gson gson = new Gson();
     private final DiamondBootConfig conf;
 
@@ -47,10 +45,8 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
     private final List<String> startOnLaunch;
 
     @Inject
-    public LocalFileDiamondBootContext(@Named("appDir") String appDir,
-            MinecraftVersionManager verMan) {
+    public LocalFileDiamondBootContext(@Named("appDir") String appDir) {
         this.appDir = Paths.get(appDir);
-        this.verMan = verMan;
 
         this.appConf = Paths.get(appDir + "/app.json");
 
@@ -111,12 +107,7 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
         meta.setId(id);
         meta.setInitialMemory(initialMemory);
         meta.setMaxMemory(maxMemory);
-
-        if (conf.instances.defaults.version.equals("RECENT")) {
-            meta.setVersionMetadata(verMan.getLatestVersion());
-        } else {
-            meta.setVersionMetadata(verMan.getInstalledVersion(conf.instances.defaults.version));
-        }
+        meta.setVersionId(conf.instances.defaults.version);
         meta.setDir(Paths.get(mcInstDir.toString() + "/" + id));
 
         return meta;

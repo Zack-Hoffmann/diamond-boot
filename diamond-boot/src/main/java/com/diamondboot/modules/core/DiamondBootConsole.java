@@ -15,8 +15,8 @@
  */
 package com.diamondboot.modules.core;
 
-import com.diamondboot.modules.events.DiamondBootEvent;
-import com.diamondboot.modules.events.MinecraftServerEvent;
+import com.diamondboot.core.event.DiamondBootEvent;
+import com.diamondboot.core.event.MinecraftServerEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import java.io.IOException;

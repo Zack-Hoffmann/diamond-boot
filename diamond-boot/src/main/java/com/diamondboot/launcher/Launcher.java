@@ -15,13 +15,13 @@
  */
 package com.diamondboot.launcher;
 
+import com.diamondboot.core.DiamondBootContext;
 import com.diamondboot.modules.core.CoreModule;
 import com.diamondboot.modules.core.DiamondBootConsole;
-import com.diamondboot.modules.core.DiamondBootContext;
 import com.diamondboot.modules.events.EventsModule;
 import com.diamondboot.modules.minecraftserver.commands.CommandModule;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxyModule;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManager;
+import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftInstancesModule;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionModule;
 import com.diamondboot.modules.status.StatusModule;

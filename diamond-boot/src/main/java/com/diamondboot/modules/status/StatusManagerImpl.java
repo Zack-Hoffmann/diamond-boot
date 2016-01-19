@@ -15,11 +15,11 @@
  */
 package com.diamondboot.modules.status;
 
-import com.diamondboot.modules.core.DiamondBootContext;
+import com.diamondboot.core.DiamondBootContext;
 import com.diamondboot.modules.minecraftserver.commands.CommandInterfaceManager;
 import com.diamondboot.modules.minecraftserver.commands.OpCommandInterface;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceManager;
-import com.diamondboot.modules.minecraftserver.instances.MinecraftInstanceMetadata;
+import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
+import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 import com.diamondboot.modules.status.DiamondBootStatus.InstanceStatus;
 import com.google.inject.name.Named;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class StatusManagerImpl implements StatusManager {
             OpCommandInterface ci = ciMan.getOpCommandInterface(meta.getId());
             InstanceStatus iStat = new InstanceStatus();
             iStat.setState(meta.isRunning() ? "Running" : "Stopped");
-            iStat.setVersion(meta.getVersionMetadata().getId());
+            iStat.setVersion(meta.getVersionId());
             if (meta.isRunning()) {
                 iStat.setDayTime(ci.time("query", "daytime"));
                 iStat.setUpTime(ci.time("query", "gametime"));
