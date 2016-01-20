@@ -31,7 +31,6 @@ public class MinecraftInstanceMetadata {
     private String initialMemory;
     private String versionId;
     private Path dir;
-    private boolean running;
 
     public String getId() {
         return id;
@@ -76,14 +75,6 @@ public class MinecraftInstanceMetadata {
 
     public void setDir(Path dir) {
         this.dir = dir;
-    }
-
-    public boolean isRunning() {
-        return running;
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
     }
 
 }

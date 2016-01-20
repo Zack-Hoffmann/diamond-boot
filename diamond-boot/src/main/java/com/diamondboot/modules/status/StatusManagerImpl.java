@@ -21,6 +21,8 @@ import com.diamondboot.modules.minecraftserver.commands.OpCommandInterface;
 import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
 import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 import com.diamondboot.modules.status.DiamondBootStatus.InstanceStatus;
+import com.diamondboot.serverproxy.MinecraftProxy;
+import com.diamondboot.serverproxy.MinecraftProxyFactory;
 import com.google.inject.name.Named;
 import java.io.IOException;
 import java.util.Map;
@@ -33,16 +35,19 @@ import javax.inject.Inject;
 public class StatusManagerImpl implements StatusManager {
 
     private final MinecraftInstanceManager instMan;
+    private final MinecraftProxyFactory factory;
     private final CommandInterfaceManager ciMan;
     private final DiamondBootContext context;
     private final String version;
 
     @Inject
     public StatusManagerImpl(MinecraftInstanceManager instMan,
+            MinecraftProxyFactory factory,
             CommandInterfaceManager ciMan,
             DiamondBootContext context,
             @Named("diamondBootVersion") String version) {
         this.instMan = instMan;
+        this.factory = factory;
         this.ciMan = ciMan;
         this.context = context;
         this.version = version;
@@ -56,10 +61,11 @@ public class StatusManagerImpl implements StatusManager {
 
         for (MinecraftInstanceMetadata meta : instMan.getInstances()) {
             OpCommandInterface ci = ciMan.getOpCommandInterface(meta.getId());
+            MinecraftProxy prx = factory.get(meta.getId());
             InstanceStatus iStat = new InstanceStatus();
-            iStat.setState(meta.isRunning() ? "Running" : "Stopped");
+            iStat.setState(prx.isRunning() ? "Running" : "Stopped");
             iStat.setVersion(meta.getVersionId());
-            if (meta.isRunning()) {
+            if (prx.isRunning()) {
                 iStat.setDayTime(ci.time("query", "daytime"));
                 iStat.setUpTime(ci.time("query", "gametime"));
                 iStat.setPlayersOnline(ci.list().size());

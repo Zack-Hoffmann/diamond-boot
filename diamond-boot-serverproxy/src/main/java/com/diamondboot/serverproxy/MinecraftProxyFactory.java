@@ -22,5 +22,5 @@ import java.io.IOException;
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
 public interface MinecraftProxyFactory {
-    MinecraftProxy create(String instance) throws IOException;
+    MinecraftProxy get(String instance) throws IOException;
 }

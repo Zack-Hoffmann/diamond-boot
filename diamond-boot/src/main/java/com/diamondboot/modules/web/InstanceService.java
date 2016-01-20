@@ -17,6 +17,7 @@ package com.diamondboot.modules.web;
 
 import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
 import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
+import com.diamondboot.serverproxy.MinecraftProxyFactory;
 import java.io.IOException;
 import java.util.List;
 import javax.inject.Inject;
@@ -41,10 +42,13 @@ import javax.ws.rs.core.Response;
 public class InstanceService {
     
     private final MinecraftInstanceManager instances;
+    private final MinecraftProxyFactory factory;
     
     @Inject
-    public InstanceService(MinecraftInstanceManager instances) {
+    public InstanceService(MinecraftInstanceManager instances,
+            MinecraftProxyFactory factory) {
         this.instances = instances;
+        this.factory = factory;
     }
     
     @GET
@@ -72,10 +76,10 @@ public class InstanceService {
         try {
             switch(action) {
                 case "start":
-                    instances.startInstance(id);
+                    factory.get(id).start();
                     break;
                 case "stop":
-                    instances.stopInstance(id);
+                    factory.get(id).stop();
                     break;
                 case "create":
                     instances.newInstance(id);

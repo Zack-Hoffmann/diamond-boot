@@ -44,7 +44,7 @@ public class ProcessBuilderMinecraftProxy implements MinecraftProxy {
     public ProcessBuilderMinecraftProxy(
             MinecraftVersionMetadata versMeta,
             MinecraftInstanceMetadata instMeta,
-            EventBus bus) throws IOException {
+            EventBus bus) {
         this.bus = bus;
         this.instMeta = instMeta;
         this.versMeta = versMeta;

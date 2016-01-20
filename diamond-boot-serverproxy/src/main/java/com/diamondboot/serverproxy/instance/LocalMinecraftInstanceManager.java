@@ -48,18 +48,13 @@ public class LocalMinecraftInstanceManager implements MinecraftInstanceManager {
 
     private final DiamondBootContext ctx;
     private final MinecraftVersionManager versMan;
-    private final MinecraftProxyFactory pxf;
     private final Gson gson = new Gson();
-    private final Map<String, MinecraftProxy> runningProxies
-            = Maps.newHashMap();
 
     @Inject
     public LocalMinecraftInstanceManager(DiamondBootContext ctx,
-            MinecraftVersionManager versMan,
-            MinecraftProxyFactory pxf) {
+            MinecraftVersionManager versMan) {
         this.versMan = versMan;
         this.ctx = ctx;
-        this.pxf = pxf;
     }
 
     @Override
@@ -78,12 +73,6 @@ public class LocalMinecraftInstanceManager implements MinecraftInstanceManager {
                         meta.setVersionId(vers.getId());
                         meta.setDir(getInstanceDirectory(conf.getInstanceId()));
 
-                        MinecraftProxy px = runningProxies.get(i);
-                        if (px == null || !px.isRunning()) {
-                            meta.setRunning(false);
-                        } else {
-                            meta.setRunning(true);
-                        }
                     } catch (IOException ex) {
                         Logger.getLogger(LocalMinecraftInstanceManager.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -153,23 +142,6 @@ public class LocalMinecraftInstanceManager implements MinecraftInstanceManager {
         }
         try (FileWriter w = new FileWriter(configPath.toFile())) {
             w.write(gson.toJson(conf));
-        }
-    }
-
-    @Override
-    public synchronized void startInstance(String id) throws IOException {
-        if (!getInstance(id).isRunning()) {
-            final MinecraftProxy px = pxf.create(id);
-            px.start();
-            runningProxies.put(id, px);
-        }
-    }
-
-    @Override
-    public void stopInstance(String id) throws IOException {
-        final MinecraftProxy px = runningProxies.get(id);
-        if (px != null) {
-            px.stop();
         }
     }
 

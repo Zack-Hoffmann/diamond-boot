@@ -21,13 +21,13 @@ import com.diamondboot.modules.core.DiamondBootConsole;
 import com.diamondboot.modules.events.EventsModule;
 import com.diamondboot.modules.minecraftserver.commands.CommandModule;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxyModule;
-import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftInstancesModule;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionModule;
 import com.diamondboot.modules.status.StatusModule;
 import com.diamondboot.modules.web.DiamondBootWebServer;
 import com.diamondboot.modules.web.ServletsModule;
 import com.diamondboot.modules.web.WebServerModule;
+import com.diamondboot.serverproxy.MinecraftProxyFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Guice;
@@ -66,22 +66,20 @@ public class Launcher implements Runnable {
     }
 
     private final DiamondBootContext ctx;
-    private final MinecraftInstanceManager instMan;
-    private final EventBus eventBus;
     private final DiamondBootConsole con;
     private final DiamondBootWebServer webServ;
+    private final MinecraftProxyFactory factory;
 
     @Inject
     public Launcher(EventBus eventBus,
             DiamondBootContext ctx,
-            MinecraftInstanceManager instMan,
             DiamondBootConsole con,
-            DiamondBootWebServer webServ) {
+            DiamondBootWebServer webServ,
+            MinecraftProxyFactory factory) {
         this.ctx = ctx;
-        this.instMan = instMan;
-        this.eventBus = eventBus;
         this.con = con;
         this.webServ = webServ;
+        this.factory = factory;
     }
 
     @Override
@@ -90,7 +88,7 @@ public class Launcher implements Runnable {
 
         ctx.getStartOnLaunchInstances().stream().forEach(i -> {
             try {
-                instMan.startInstance(i);
+                factory.get(i).start();
             } catch (IOException ex) {
                 Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
             }
