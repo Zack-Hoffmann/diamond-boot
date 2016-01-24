@@ -15,6 +15,7 @@
  */
 package com.diamondboot.serverproxy;
 
+import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +34,8 @@ public interface MinecraftProxy {
 
     OutputStream getOutputStream() throws IOException;
 
-    public void stop() throws IOException;
+    void stop() throws IOException;
+    
+    MinecraftInstanceMetadata getInstanceMetadata();
 
 }

@@ -78,10 +78,9 @@ public class ProcessBuilderMinecraftProxy implements MinecraftProxy {
     
     @Subscribe
     public void outputEventToProcess(DiamondBootEvent e) {
-        try (PrintStream pxOut = new PrintStream(getOutputStream());) {
+        try {
             if (instMeta.getId().equals(e.getTargetInstance())) {
-                pxOut.println(e.getContent());
-                pxOut.flush();
+                new PrintStream(getOutputStream(),true).println(e.getContent());
             }
         } catch (IOException ex) {
             Logger.getLogger(ProcessBuilderMinecraftProxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -100,7 +99,7 @@ public class ProcessBuilderMinecraftProxy implements MinecraftProxy {
     
     @Override
     public boolean isRunning() {
-        return proc.isAlive();
+        return proc == null ? false : proc.isAlive();
     }
     
     @Override
@@ -112,5 +111,10 @@ public class ProcessBuilderMinecraftProxy implements MinecraftProxy {
             Logger.getLogger(ProcessBuilderMinecraftProxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    @Override
+    public MinecraftInstanceMetadata getInstanceMetadata() {
+        return instMeta;
+    }
+   
 }
