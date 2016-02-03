@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.web;
+package com.diamondboot.web;
 
 import com.diamondboot.modules.status.DiamondBootStatus;
 import com.diamondboot.modules.status.StatusManager;

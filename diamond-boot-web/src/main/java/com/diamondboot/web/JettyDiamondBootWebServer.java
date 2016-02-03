@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.web;
+package com.diamondboot.web;
 
 import com.diamondboot.core.DiamondBootContext;
-import com.google.inject.servlet.GuiceFilter;
 import java.util.EnumSet;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -33,7 +34,7 @@ public class JettyDiamondBootWebServer implements DiamondBootWebServer {
     private final Server serv;
 
     @Inject
-    public JettyDiamondBootWebServer(DiamondBootContext ctx, GuiceFilter filter) {
+    public JettyDiamondBootWebServer(DiamondBootContext ctx, @Named("guiceFilter") Filter filter) {
         serv = new Server(ctx.getWebServerPort());
 
         ServletContextHandler handler = new ServletContextHandler();

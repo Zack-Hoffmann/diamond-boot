@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.commands;
+package com.diamondboot.script.command;
 
 import com.diamondboot.core.event.DiamondBootEvent;
 import com.diamondboot.core.event.MinecraftServerEvent;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.assistedinject.Assisted;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.inject.Inject;
 
 /**
  *
@@ -37,30 +35,28 @@ public class OpCommandInterfaceImpl implements OpCommandInterface {
     private final String instance;
     private final EventBus bus;
     private final BlockingQueue<String> responses = new LinkedBlockingQueue<>();
-    
-    @Inject
-    public OpCommandInterfaceImpl(@Assisted String instance,
-            EventBus bus) {
+
+    public OpCommandInterfaceImpl(String instance, EventBus bus) {
         this.instance = instance;
         this.bus = bus;
     }
-    
-    private void invoke(String command, String... args) {
+
+    public void invoke(String command, String... args) {
         StringBuilder sb = new StringBuilder();
         sb.append(command);
-        for (String a: args) {
+        for (String a : args) {
             sb.append(" ").append(a);
         }
         bus.post(DiamondBootEvent.newEvent(instance, sb.toString()));
     }
-    
+
     @Subscribe
     public void queueResponses(MinecraftServerEvent e) {
         if (e.getInstanceMetadata().getId().equals(instance)) {
             responses.add(e.getContent());
         }
     }
-    
+
     @Override
     public List<String> list() throws InterruptedException {
         List<String> players = Lists.newArrayList();
@@ -118,5 +114,10 @@ public class OpCommandInterfaceImpl implements OpCommandInterface {
         } while (!done);
         bus.unregister(this);
         return max;
-    } 
+    }
+
+    @Override
+    public void stop() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -53,4 +53,9 @@ public class DiamondBootEvent {
         this.content = content;
     }
 
+    @Override
+    public String toString() {
+        return "DiamondBootEvent{" + "targetInstance=" + targetInstance + ", content=" + content + '}';
+    }
+
 }

@@ -15,9 +15,10 @@
  */
 package com.diamondboot.modules.minecraftserver.commands;
 
+import com.diamondboot.script.command.OpCommandInterfaceFactory;
+import com.diamondboot.script.command.OpCommandInterfaceFactoryImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
  *
@@ -27,10 +28,7 @@ public class CommandModule extends AbstractModule {
     
     @Override
     protected void configure() {
-        bind(CommandInterfaceManager.class).to(CommandInterfaceManagerImpl.class).in(Scopes.SINGLETON);
-        install(new FactoryModuleBuilder()
-                .implement(OpCommandInterface.class, OpCommandInterfaceImpl.class)
-                .build(OpCommandInterfaceFactory.class));
+        bind(OpCommandInterfaceFactory.class).to(OpCommandInterfaceFactoryImpl.class).in(Scopes.SINGLETON);
     }
     
 }

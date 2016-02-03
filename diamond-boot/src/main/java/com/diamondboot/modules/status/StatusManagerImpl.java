@@ -16,11 +16,11 @@
 package com.diamondboot.modules.status;
 
 import com.diamondboot.core.DiamondBootContext;
-import com.diamondboot.modules.minecraftserver.commands.CommandInterfaceManager;
-import com.diamondboot.modules.minecraftserver.commands.OpCommandInterface;
+import com.diamondboot.script.command.OpCommandInterface;
 import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
 import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 import com.diamondboot.modules.status.DiamondBootStatus.InstanceStatus;
+import com.diamondboot.script.command.OpCommandInterfaceFactory;
 import com.diamondboot.serverproxy.MinecraftProxy;
 import com.diamondboot.serverproxy.MinecraftProxyFactory;
 import com.google.inject.name.Named;
@@ -36,19 +36,19 @@ public class StatusManagerImpl implements StatusManager {
 
     private final MinecraftInstanceManager instMan;
     private final MinecraftProxyFactory factory;
-    private final CommandInterfaceManager ciMan;
+    private final OpCommandInterfaceFactory ciFactory;
     private final DiamondBootContext context;
     private final String version;
 
     @Inject
     public StatusManagerImpl(MinecraftInstanceManager instMan,
             MinecraftProxyFactory factory,
-            CommandInterfaceManager ciMan,
+            OpCommandInterfaceFactory ciFactory,
             DiamondBootContext context,
             @Named("diamondBootVersion") String version) {
         this.instMan = instMan;
         this.factory = factory;
-        this.ciMan = ciMan;
+        this.ciFactory = ciFactory;
         this.context = context;
         this.version = version;
     }
@@ -60,7 +60,7 @@ public class StatusManagerImpl implements StatusManager {
         Map<String, InstanceStatus> instStats = status.getInstances();
 
         for (MinecraftInstanceMetadata meta : instMan.getInstances()) {
-            OpCommandInterface ci = ciMan.getOpCommandInterface(meta.getId());
+            OpCommandInterface ci = ciFactory.get(meta.getId());
             MinecraftProxy prx = factory.get(meta.getId());
             InstanceStatus iStat = new InstanceStatus();
             iStat.setState(prx.isRunning() ? "Running" : "Stopped");

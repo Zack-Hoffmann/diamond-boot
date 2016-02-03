@@ -15,6 +15,8 @@
  */
 package com.diamondboot.modules.web;
 
+import com.diamondboot.web.DiamondBootWebServer;
+import com.diamondboot.web.JettyDiamondBootWebServer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 

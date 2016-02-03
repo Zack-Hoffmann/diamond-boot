@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.web;
+package com.diamondboot.web;
 
-import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
 import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 import com.diamondboot.serverproxy.MinecraftProxyFactory;
+import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
 import java.io.IOException;
 import java.util.List;
 import javax.inject.Inject;

@@ -49,4 +49,9 @@ public class MinecraftServerEvent {
         this.content = content;
     }
 
+    @Override
+    public String toString() {
+        return "MinecraftServerEvent{" + "instanceId=" + instanceMetadata.getId() + ", content=" + content + '}';
+    }
+
 }

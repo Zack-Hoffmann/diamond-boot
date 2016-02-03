@@ -24,7 +24,7 @@ import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxyModule;
 import com.diamondboot.modules.minecraftserver.instances.MinecraftInstancesModule;
 import com.diamondboot.modules.minecraftserver.versions.MinecraftVersionModule;
 import com.diamondboot.modules.status.StatusModule;
-import com.diamondboot.modules.web.DiamondBootWebServer;
+import com.diamondboot.web.DiamondBootWebServer;
 import com.diamondboot.modules.web.ServletsModule;
 import com.diamondboot.modules.web.WebServerModule;
 import com.diamondboot.serverproxy.MinecraftProxyFactory;

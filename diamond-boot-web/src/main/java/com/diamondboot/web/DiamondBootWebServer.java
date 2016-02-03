@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.minecraftserver.commands;
+package com.diamondboot.web;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface CommandInterfaceManager {
+public interface DiamondBootWebServer {
     
-    OpCommandInterface getOpCommandInterface(String id);
+    void start();
+    void stop();
+    boolean isRunning();
     
 }

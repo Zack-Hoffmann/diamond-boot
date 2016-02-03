@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.web;
+package com.diamondboot.script.command;
+
+import java.util.List;
 
 /**
  *
  * @author Zack Hoffmann <zachary.hoffmann@gmail.com>
  */
-public interface DiamondBootWebServer {
-    
-    void start();
+public interface OpCommandInterface {
+    List<String> list() throws InterruptedException;
+    List<String> banlist(String option);
+    Long time(String option, String value);
+    int maxPlayers() throws InterruptedException;
     void stop();
-    boolean isRunning();
-    
 }

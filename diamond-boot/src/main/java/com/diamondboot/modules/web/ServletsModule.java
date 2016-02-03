@@ -15,6 +15,9 @@
  */
 package com.diamondboot.modules.web;
 
+import com.diamondboot.web.InstanceService;
+import com.diamondboot.web.StatusService;
+import com.diamondboot.web.VersionService;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Scopes;
