@@ -13,6 +13,8 @@ import com.diamondboot.script.command.CommandInvocationHandler;
 import com.diamondboot.script.command.MinecraftCommand;
 import com.diamondboot.script.command.MinecraftCommandMap;
 import com.diamondboot.script.command.OpCommandInterface;
+import com.diamondboot.script.command.OpCommandInterfaceFactory;
+import com.diamondboot.script.command.OpCommandInterfaceFactoryImpl;
 import com.diamondboot.script.command.impl.ListImpl;
 import com.diamondboot.script.command.impl.StopImpl;
 import com.diamondboot.serverproxy.MinecraftProxy;
@@ -28,8 +30,6 @@ import com.google.common.eventbus.Subscribe;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,16 +69,10 @@ public class Launcher extends com.diamondboot.serverproxy.Launcher {
     @Subscribe
     public void waitForStartup(MinecraftServerEvent e) {
         if (e.getContent().contains("Done")) {
-            final Collection<AbstractMinecraftCommand<? extends Object>> COMMANDS = Lists.newArrayList(
-                    new ListImpl(instId, getBus()),
-                    new StopImpl(instId, getBus())
-            );
+            final OpCommandInterfaceFactory factory = new OpCommandInterfaceFactoryImpl(getBus());
             try {
                 ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-                MinecraftCommandMap commandMap = new MinecraftCommandMap();
-                commandMap.putAll(COMMANDS.stream().collect(Collectors.toMap(MinecraftCommand::getName, Function.identity())));
-                OpCommandInterface commands = (OpCommandInterface) Proxy.newProxyInstance(OpCommandInterface.class.getClassLoader(), new Class<?>[]{OpCommandInterface.class}, new CommandInvocationHandler(commandMap));
-                engine.put("commands", commands);
+                engine.put("commands", factory.get(instId));
                 engine.eval("commands.list()");
                 engine.eval("commands.stop()");
             } catch (ScriptException ex) {

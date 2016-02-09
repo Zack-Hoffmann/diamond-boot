@@ -27,4 +27,5 @@ public interface OpCommandInterface {
     Long time(String option, String value);
     int maxPlayers() throws InterruptedException;
     void stop();
+    // TODO finish command list
 }
