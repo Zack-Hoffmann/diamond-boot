@@ -15,8 +15,8 @@
  */
 package com.diamondboot.web;
 
-import com.diamondboot.modules.status.DiamondBootStatus;
-import com.diamondboot.modules.status.StatusManager;
+import com.diamondboot.core.status.DiamondBootStatus;
+import com.diamondboot.core.status.StatusManager;
 import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;

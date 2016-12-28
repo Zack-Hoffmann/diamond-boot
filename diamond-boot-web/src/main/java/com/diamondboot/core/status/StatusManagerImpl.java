@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.status;
+package com.diamondboot.core.status;
 
 import com.diamondboot.core.DiamondBootContext;
 import com.diamondboot.script.command.OpCommandInterface;
 import com.diamondboot.serverproxy.instance.MinecraftInstanceManager;
 import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
-import com.diamondboot.modules.status.DiamondBootStatus.InstanceStatus;
+import com.diamondboot.core.status.DiamondBootStatus.InstanceStatus;
 import com.diamondboot.script.command.OpCommandInterfaceFactory;
 import com.diamondboot.serverproxy.MinecraftProxy;
 import com.diamondboot.serverproxy.MinecraftProxyFactory;
