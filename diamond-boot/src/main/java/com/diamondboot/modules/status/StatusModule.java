@@ -15,6 +15,8 @@
  */
 package com.diamondboot.modules.status;
 
+import com.diamondboot.core.status.StatusManager;
+import com.diamondboot.core.status.StatusManagerImpl;
 import com.google.inject.AbstractModule;
 
 /**
