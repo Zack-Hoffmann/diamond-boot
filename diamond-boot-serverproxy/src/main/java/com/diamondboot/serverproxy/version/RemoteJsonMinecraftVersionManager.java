@@ -125,12 +125,14 @@ public class RemoteJsonMinecraftVersionManager implements MinecraftVersionManage
     }
 
     @Override
-    public MinecraftVersionMetadata getInstalledVersion(String version) throws IOException {
+    public MinecraftVersionMetadata getInstalledVersion(final String version) throws IOException {
+        final String matchVersion = "RECENT".equals(version) ? this.getLatestVersion().getId() : version;
+
         return getInstalledVersions().stream()
-                .filter(v -> v.getId().equals(version))
+                .filter(v -> v.getId().equals(matchVersion))
                 .findFirst()
                 .orElseThrow(
-                        () -> Exceptions.invalidParameter("Version %s is not installed.", version)
+                        () -> Exceptions.invalidParameter("Version %s is not installed.", matchVersion)
                 );
     }
 

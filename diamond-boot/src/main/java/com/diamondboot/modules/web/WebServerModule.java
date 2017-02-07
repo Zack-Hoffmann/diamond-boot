@@ -19,6 +19,9 @@ import com.diamondboot.web.DiamondBootWebServer;
 import com.diamondboot.web.JettyDiamondBootWebServer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.name.Names;
+import com.google.inject.servlet.GuiceFilter;
+import javax.servlet.Filter;
 
 /**
  *
@@ -29,6 +32,7 @@ public class WebServerModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(DiamondBootWebServer.class).to(JettyDiamondBootWebServer.class).in(Scopes.SINGLETON);
+        bind(Filter.class).annotatedWith(Names.named("guiceFilter")).to(GuiceFilter.class);
     }
     
 }

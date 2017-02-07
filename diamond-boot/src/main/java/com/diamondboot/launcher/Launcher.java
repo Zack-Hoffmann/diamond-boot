@@ -45,10 +45,15 @@ public class Launcher implements Runnable {
     
     public static final String DIAMOND_BOOT_VERSION = "alpha 1";
 
-    public static void main(String... args) {
+    public static void main(final String... args) {
+        final Logger l = Logger.getLogger("BootstrapLogger");
+        l.log(Level.INFO, "Configuring Diamond Boot.");
+        
         try {
             String appDir = args.length > 0 ? args[0]
                     : (System.getProperty("user.home") + "/diamond-boot");
+            l.log(Level.INFO, "Application directory is {0}.", appDir);
+            l.log(Level.INFO, "Creating modules.  Adjust logging to CONFIG for more information.");
 
             final List allModules = ImmutableList.of(new MinecraftProxyModule(),
                     new MinecraftVersionModule(),
@@ -59,23 +64,27 @@ public class Launcher implements Runnable {
                     new StatusModule(),
                     new CommandModule(),
                     new CoreModule(appDir));
+            l.log(Level.INFO, "Launching!");
             Guice.createInjector(allModules).getInstance(Launcher.class).run();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
     }
 
+    private final Logger log;
     private final DiamondBootContext ctx;
     private final DiamondBootConsole con;
     private final DiamondBootWebServer webServ;
     private final MinecraftProxyFactory factory;
 
     @Inject
-    public Launcher(EventBus eventBus,
+    public Launcher(Logger log,
+            EventBus eventBus,
             DiamondBootContext ctx,
             DiamondBootConsole con,
             DiamondBootWebServer webServ,
             MinecraftProxyFactory factory) {
+        this.log = log;
         this.ctx = ctx;
         this.con = con;
         this.webServ = webServ;
@@ -84,16 +93,20 @@ public class Launcher implements Runnable {
 
     @Override
     public void run() {
+        log.log(Level.INFO, "Starting console.");
         con.start();
-
+        
+        log.log(Level.INFO, "Starting instances.");
         ctx.getStartOnLaunchInstances().stream().forEach(i -> {
+            log.log(Level.INFO, "Starting instance \"{0}\".", i);
             try {
                 factory.get(i).start();
             } catch (IOException ex) {
-                Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             }
         });
         
+        log.log(Level.INFO, "Starting web server.");
         webServ.start();
 
     }
