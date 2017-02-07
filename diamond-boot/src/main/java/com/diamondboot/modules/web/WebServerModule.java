@@ -30,8 +30,8 @@ import javax.servlet.Filter;
 public class WebServerModule extends AbstractModule {
     
     @Override
-    protected void configure() {
-        bind(DiamondBootWebServer.class).to(JettyDiamondBootWebServer.class).in(Scopes.SINGLETON);
+    protected void configure() {       
+        bind(DiamondBootWebServer.class).to(JettyDiamondBootWebServer.class).in(Scopes.SINGLETON);  
         bind(Filter.class).annotatedWith(Names.named("guiceFilter")).to(GuiceFilter.class);
     }
     

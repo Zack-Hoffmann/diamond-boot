@@ -37,7 +37,7 @@ public class Launcher {
         String instId = args.length > 1 ? args[1]
                 : "default-inst";
         EventBus bus = new AsyncEventBus(exec);
-        DiamondBootContext ctx = new LocalFileDiamondBootContext(appDir);
+        DiamondBootContext ctx = new LocalFileDiamondBootContext(Logger.getLogger(LocalFileDiamondBootContext.class.getName()), appDir);
         MinecraftVersionManager versMan = new RemoteJsonMinecraftVersionManager("https://s3.amazonaws.com/Minecraft.Download/versions/", "versions.json", ctx);
         MinecraftInstanceManager instMan = new LocalMinecraftInstanceManager(ctx, versMan);
         MinecraftProxy prox = new ProcessBuilderMinecraftProxyFactory(instMan, versMan, bus).get(instId);

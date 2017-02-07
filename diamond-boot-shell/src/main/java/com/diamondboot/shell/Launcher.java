@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public class Launcher {
 
     private static final EventBus BUS = new AsyncEventBus(Executors.newFixedThreadPool(10));
-    private static final DiamondBootContext ctx = new LocalFileDiamondBootContext(System.getProperty("user.home") + "/diamond-boot");
+    private static final DiamondBootContext ctx = new LocalFileDiamondBootContext(Logger.getLogger(LocalFileDiamondBootContext.class.getName()), System.getProperty("user.home") + "/diamond-boot");
     private static final MinecraftVersionManager vm = new RemoteJsonMinecraftVersionManager("https://s3.amazonaws.com/Minecraft.Download/versions/", "versions.json", ctx);
     private static final MinecraftInstanceManager IM = new LocalMinecraftInstanceManager(ctx, vm);
     private static final MinecraftProxyFactory FACTORY = new ProcessBuilderMinecraftProxyFactory(IM, vm, BUS);

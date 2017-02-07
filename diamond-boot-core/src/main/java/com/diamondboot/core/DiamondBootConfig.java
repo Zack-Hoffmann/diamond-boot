@@ -32,7 +32,7 @@ class DiamondBootConfig {
         def.instances.defaults.initialMemory = "1024M";
         def.instances.defaults.maximumMemory = "1024M";
         def.instances.defaults.version = "RECENT";
-        def.instances.startOnLaunch = Arrays.asList("default-inst");
+        def.instances.startOnLaunch = Arrays.asList();
         def.webServer.hostname = "localhost";
         def.webServer.port = 8080;
         return def;

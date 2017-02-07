@@ -21,7 +21,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import javax.inject.Singleton;
 
 /**
@@ -31,7 +30,7 @@ import javax.inject.Singleton;
 public class EventsModule extends AbstractModule {
 
     @Override
-    public void configure() {
+    public void configure() {       
         bind(EventBus.class).to(AsyncEventBus.class);
     }
 

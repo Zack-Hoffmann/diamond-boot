@@ -24,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -33,6 +35,8 @@ import javax.inject.Named;
  */
 public class LocalFileDiamondBootContext implements DiamondBootContext {
 
+    private final Logger log;
+    
     private final Path appDir;
     private final Path appConf;
     private final Gson gson = new Gson();
@@ -45,18 +49,26 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
     private final List<String> startOnLaunch;
 
     @Inject
-    public LocalFileDiamondBootContext(@Named("appDir") String appDir) {
+    public LocalFileDiamondBootContext(final Logger log,
+            @Named("appDir") String appDir) {
+        this.log = log;
+        log.log(Level.CONFIG, "Initializing Diamond Boot Context.");
         this.appDir = Paths.get(appDir);
 
         this.appConf = Paths.get(appDir + "/app.json");
+        
+        log.log(Level.CONFIG, "Configuration file is {0}.", this.appConf);
 
         try {
             if (Files.notExists(this.appDir)) {
+                log.log(Level.CONFIG, "{0} does not exist and will be created.", this.appDir);
                 Files.createDirectories(this.appDir);
             }
 
             if (Files.notExists(appConf)) {
+                log.log(Level.CONFIG, "{0} does not exist and will be created.", this.appConf);
                 Files.createFile(appConf);
+                log.log(Level.CONFIG, "Initializing {0} with default values.", this.appConf);
                 try (FileWriter w = new FileWriter(appConf.toFile())) {
                     w.write(gson.toJson(DiamondBootConfig.getDefaultConfig()));
                 }
