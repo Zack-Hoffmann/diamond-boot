@@ -17,6 +17,7 @@ package com.diamondboot.core;
 
 import com.diamondboot.core.metadata.MinecraftInstanceMetadata;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class LocalFileDiamondBootContext implements DiamondBootContext {
     
     private final Path appDir;
     private final Path appConf;
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final DiamondBootConfig conf;
 
     private final Path mcVersDir;
