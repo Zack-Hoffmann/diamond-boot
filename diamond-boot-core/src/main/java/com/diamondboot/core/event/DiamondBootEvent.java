@@ -22,6 +22,7 @@ package com.diamondboot.core.event;
 public class DiamondBootEvent {
 
     public static final String ALL_INSTANCES = "#ALL#";
+    public static final String SHELL = "#SHELL#";
 
     public static DiamondBootEvent newEvent(String targetInstance, String content) {
         DiamondBootEvent e = new DiamondBootEvent();
@@ -32,6 +33,10 @@ public class DiamondBootEvent {
 
     public static DiamondBootEvent newAllInstanceEvent(String content) {
         return newEvent(ALL_INSTANCES, content);
+    }
+    
+    public static DiamondBootEvent newShellEvent(String content) {
+        return newEvent(SHELL, content);
     }
 
     private String targetInstance;

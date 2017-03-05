@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diamondboot.modules.core;
+package com.diamondboot.core;
 
 import com.diamondboot.core.event.DiamondBootEvent;
 import com.diamondboot.core.event.MinecraftServerEvent;
@@ -34,10 +34,12 @@ public class DiamondBootConsole {
     private boolean running = false;
     private final Scanner sc = new Scanner(System.in);
     private final EventBus bus;
+    private final Logger log;
 
     @Inject
-    public DiamondBootConsole(EventBus bus) {
+    public DiamondBootConsole(Logger log, EventBus bus) {
         this.bus = bus;
+        this.log = log;
     }
     
     @Subscribe
@@ -49,21 +51,26 @@ public class DiamondBootConsole {
         bus.register(this);
 
         new Thread(() -> {
+            log.log(Level.FINE, "Console thread has started.");
             while (isRunning()) {
                 try {
                     if (System.in.available() > 0 && sc.hasNextLine()) {
-                        bus.post(DiamondBootEvent.newAllInstanceEvent(sc.nextLine()));
+                        DiamondBootEvent e = DiamondBootEvent.newShellEvent(sc.nextLine());
+                        bus.post(e);
+                        log.log(Level.FINER, e.toString());
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(DiamondBootConsole.class.getName()).log(Level.SEVERE, null, ex);
+                    log.log(Level.SEVERE, null, ex);
                 }
             }
+            log.log(Level.FINE, "Console thread has stopped.");
         }).start();
         running = true;
     }
 
     public void stop() {
         running = false;
+        log.log(Level.FINE, "Console is stopping...");
     }
 
     public final boolean isRunning() {

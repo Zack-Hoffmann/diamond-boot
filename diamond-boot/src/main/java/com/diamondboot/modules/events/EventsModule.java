@@ -15,10 +15,12 @@
  */
 package com.diamondboot.modules.events;
 
+import com.diamondboot.core.event.EventLogger;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import javax.inject.Singleton;
@@ -32,6 +34,7 @@ public class EventsModule extends AbstractModule {
     @Override
     public void configure() {       
         bind(EventBus.class).to(AsyncEventBus.class);
+        bind(EventLogger.class).asEagerSingleton();
     }
 
     @Provides

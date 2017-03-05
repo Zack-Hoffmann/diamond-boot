@@ -15,6 +15,7 @@
  */
 package com.diamondboot.modules.core;
 
+import com.diamondboot.core.DiamondBootConsole;
 import com.diamondboot.core.LocalFileDiamondBootContext;
 import com.diamondboot.core.DiamondBootContext;
 import com.diamondboot.launcher.Launcher;

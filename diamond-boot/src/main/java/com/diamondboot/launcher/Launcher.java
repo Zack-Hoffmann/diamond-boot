@@ -16,8 +16,9 @@
 package com.diamondboot.launcher;
 
 import com.diamondboot.core.DiamondBootContext;
+import com.diamondboot.core.event.EventLogger;
 import com.diamondboot.modules.core.CoreModule;
-import com.diamondboot.modules.core.DiamondBootConsole;
+import com.diamondboot.core.DiamondBootConsole;
 import com.diamondboot.modules.events.EventsModule;
 import com.diamondboot.modules.minecraftserver.commands.CommandModule;
 import com.diamondboot.modules.minecraftserver.proxy.MinecraftProxyModule;
@@ -29,11 +30,11 @@ import com.diamondboot.modules.web.ServletsModule;
 import com.diamondboot.modules.web.WebServerModule;
 import com.diamondboot.serverproxy.MinecraftProxyFactory;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Guice;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 
@@ -46,6 +47,13 @@ public class Launcher implements Runnable {
     public static final String DIAMOND_BOOT_VERSION = "alpha 1";
 
     public static void main(final String... args) {
+        try {
+            LogManager.getLogManager().readConfiguration(Launcher.class.getResourceAsStream("/logging.properties"));
+        } catch (IOException ex) {
+            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
         final Logger l = Logger.getLogger("BootstrapLogger");
         l.log(Level.INFO, "Configuring Diamond Boot.");
         
@@ -53,7 +61,7 @@ public class Launcher implements Runnable {
             String appDir = args.length > 0 ? args[0]
                     : (System.getProperty("user.home") + "/diamond-boot");
             l.log(Level.INFO, "Application directory is {0}.", appDir);
-            l.log(Level.INFO, "Creating modules.  Adjust logging to CONFIG for more information.");
+            l.log(Level.INFO, "Creating modules.");
 
             final List allModules = ImmutableList.of(new MinecraftProxyModule(),
                     new MinecraftVersionModule(),
@@ -72,6 +80,7 @@ public class Launcher implements Runnable {
     }
 
     private final Logger log;
+    private final EventLogger evl;
     private final DiamondBootContext ctx;
     private final DiamondBootConsole con;
     private final DiamondBootWebServer webServ;
@@ -79,12 +88,13 @@ public class Launcher implements Runnable {
 
     @Inject
     public Launcher(Logger log,
-            EventBus eventBus,
+            EventLogger evl,
             DiamondBootContext ctx,
             DiamondBootConsole con,
             DiamondBootWebServer webServ,
             MinecraftProxyFactory factory) {
         this.log = log;
+        this.evl = evl;
         this.ctx = ctx;
         this.con = con;
         this.webServ = webServ;
@@ -93,10 +103,16 @@ public class Launcher implements Runnable {
 
     @Override
     public void run() {
+        log.log(Level.INFO, "Starting event logger.");
+        evl.start();
+        
         log.log(Level.INFO, "Starting console.");
         con.start();
         
         log.log(Level.INFO, "Starting instances.");
+        if (log.isLoggable(Level.INFO) && ctx.getStartOnLaunchInstances().isEmpty()) {
+            log.log(Level.INFO, "No instances to start.");
+        }
         ctx.getStartOnLaunchInstances().stream().forEach(i -> {
             log.log(Level.INFO, "Starting instance \"{0}\".", i);
             try {
